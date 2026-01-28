@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { X, Calendar } from 'lucide-react';
+import { X, Calendar, Search } from 'lucide-react';
 import { Fixture } from '@/types';
 import { getTodaysFixtures } from '@/lib/footballApi';
 
@@ -13,9 +13,11 @@ interface GameSelectorModalProps {
 
 export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: GameSelectorModalProps) {
   const [fixtures, setFixtures] = useState<Fixture[]>([]);
+  const [filteredFixtures, setFilteredFixtures] = useState<Fixture[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     if (isOpen) {
@@ -23,13 +25,29 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
     }
   }, [isOpen, selectedDate]);
 
+  // Filter fixtures when search query changes
+  useEffect(() => {
+    if (searchQuery.trim() === '') {
+      setFilteredFixtures(fixtures);
+    } else {
+      const query = searchQuery.toLowerCase();
+      const filtered = fixtures.filter(fixture => 
+        fixture.homeTeam.name.toLowerCase().includes(query) ||
+        fixture.awayTeam.name.toLowerCase().includes(query)
+      );
+      setFilteredFixtures(filtered);
+    }
+  }, [searchQuery, fixtures]);
+
   const fetchFixtures = async () => {
     setLoading(true);
     setError(null);
+    setSearchQuery(''); // Clear search when fetching new date
     
     try {
       const games = await getTodaysFixtures();
       setFixtures(games);
+      setFilteredFixtures(games);
     } catch (err) {
       setError('Failed to load games');
     } finally {
@@ -55,11 +73,11 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
         </button>
 
         <h2 className="text-xl font-bold text-gradient mb-4">
-          Select Today's Game
+          Select Game
         </h2>
 
         {/* Date selector */}
-        <div className="mb-4">
+        <div className="mb-3">
           <div className="flex items-center gap-2 glass rounded-lg p-2">
             <Calendar className="w-5 h-5 text-[#00d4ff]" />
             <input
@@ -71,19 +89,40 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
           </div>
         </div>
 
+        {/* Search filter */}
+        <div className="mb-4">
+          <div className="flex items-center gap-2 glass rounded-lg p-2">
+            <Search className="w-5 h-5 text-[#00d4ff]/50" />
+            <input
+              type="text"
+              placeholder="Filter by team name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-transparent text-white focus:outline-none w-full placeholder-[#00d4ff]/50"
+            />
+          </div>
+        </div>
+
+        {/* Results count */}
+        {!loading && !error && filteredFixtures.length > 0 && (
+          <div className="text-xs text-[#00d4ff]/50 mb-2">
+            Showing {filteredFixtures.length} of {fixtures.length} games
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <div className="animate-pulse text-[#00d4ff]">Loading games...</div>
           </div>
         ) : error ? (
           <div className="text-red-400 text-center py-8">{error}</div>
-        ) : fixtures.length === 0 ? (
+        ) : filteredFixtures.length === 0 ? (
           <div className="text-[#00d4ff]/50 text-center py-8">
-            No games scheduled for this date
+            {searchQuery ? 'No teams match your search' : 'No games scheduled for this date'}
           </div>
         ) : (
           <div className="overflow-y-auto flex-1 space-y-3 pr-2">
-            {fixtures.map((fixture) => (
+            {filteredFixtures.map((fixture) => (
               <button
                 key={fixture.id}
                 onClick={() => {
@@ -116,12 +155,16 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
                   </div>
                 </div>
                 
-                {/* League info */}
+                {/* League info with UTC time */}
                 <div className="mt-2 flex items-center gap-2 text-xs text-[#00d4ff]/50">
                   <img src={fixture.leagueLogo} alt={fixture.league} className="w-4 h-4 object-contain" />
                   <span>{fixture.league}</span>
                   <span>•</span>
-                  <span>{fixture.time ? new Date(fixture.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'TBA'}</span>
+                  <span>
+                    {fixture.time 
+                      ? new Date(fixture.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'})
+                      : 'TBA'}
+                  </span>
                 </div>
               </button>
             ))}
