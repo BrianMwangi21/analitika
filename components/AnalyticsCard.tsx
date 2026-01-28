@@ -119,6 +119,13 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
         <X className="w-5 h-5" />
       </button>
 
+      {/* Selected odds count badge */}
+      {selectedOdds.length > 0 && (
+        <div className="absolute top-2 left-2 md:top-3 md:left-3 w-6 h-6 flex items-center justify-center bg-[#00d4ff] rounded-full text-xs font-bold text-black">
+          {selectedOdds.length}
+        </div>
+      )}
+
       {loading ? (
         <LoadingCard />
       ) : error ? (

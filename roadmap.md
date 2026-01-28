@@ -289,7 +289,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Store selected odds data (market, value, odds)
 - Allow deselection by clicking again
 - Display count of selected odds
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ---
 
