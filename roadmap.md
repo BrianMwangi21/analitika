@@ -61,7 +61,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Update `app/page.tsx`
 - Create flex column container
 - Add grid for cards (3 columns on desktop)
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ---
 
