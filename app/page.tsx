@@ -2,23 +2,69 @@
 
 import { useState } from 'react';
 import Header from '@/components/Header';
+import EmptyCard from '@/components/EmptyCard';
+import TeamSearchModal from '@/components/TeamSearchModal';
+import AnalyticsCard from '@/components/AnalyticsCard';
+import { Card, Team } from '@/types';
 import { searchTeams } from '@/lib/footballApi';
-import { Team } from '@/types';
 
 export default function Home() {
-  const [testResults, setTestResults] = useState<Team[] | null>(null);
-  const [testError, setTestError] = useState<string | null>(null);
+  const [cards, setCards] = useState<Card[]>([{ 
+    id: '1', 
+    homeTeam: null, 
+    awayTeam: null, 
+    analytics: null, 
+    isLoading: false, 
+    error: null 
+  }]);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
-  const handleTestApi = async () => {
-    try {
-      setTestError(null);
-      const results = await searchTeams('Manchester');
-      setTestResults(results);
-      console.log('API Test Results:', results);
-    } catch (error) {
-      setTestError('API Error: ' + (error instanceof Error ? error.message : String(error)));
-      console.error('API Test Error:', error);
-    }
+  const handleEmptyCardClick = (cardId: string) => {
+    setActiveCardId(cardId);
+    setIsModalOpen(true);
+  };
+
+  const handleSelectTeams = async (homeTeam: Team, awayTeam: Team) => {
+    if (!activeCardId) return;
+
+    // Update card with teams
+    setCards(prev => prev.map(card => 
+      card.id === activeCardId 
+        ? { ...card, homeTeam, awayTeam, isLoading: true }
+        : card
+    ));
+
+    setIsModalOpen(false);
+    setActiveCardId(null);
+
+    // Add new empty card
+    setCards(prev => [...prev, { 
+      id: Date.now().toString(), 
+      homeTeam: null, 
+      awayTeam: null, 
+      analytics: null, 
+      isLoading: false, 
+      error: null 
+    }]);
+  };
+
+  const handleDeleteCard = (cardId: string) => {
+    setCards(prev => {
+      const filtered = prev.filter(card => card.id !== cardId);
+      // Keep at least one empty card
+      if (filtered.length === 0 || !filtered.some(c => !c.homeTeam && !c.awayTeam)) {
+        return [...filtered, { 
+          id: Date.now().toString(), 
+          homeTeam: null, 
+          awayTeam: null, 
+          analytics: null, 
+          isLoading: false, 
+          error: null 
+        }];
+      }
+      return filtered;
+    });
   };
 
   return (
@@ -27,52 +73,30 @@ export default function Home() {
       
       <main className="flex-1 px-4 pb-8">
         <div className="mx-auto max-w-7xl">
-          {/* API Test Section */}
-          <div className="mb-8 p-4 glass rounded-xl">
-            <h2 className="text-lg font-bold text-[#00d4ff] mb-4">API Test</h2>
-            <button
-              onClick={handleTestApi}
-              className="px-4 py-2 bg-[#00d4ff]/20 border border-[#00d4ff] rounded-lg text-[#00d4ff] hover:bg-[#00d4ff]/30 transition-all"
-            >
-              Test Search API (Manchester)
-            </button>
-            
-            {testError && (
-              <div className="mt-4 p-3 bg-red-500/20 border border-red-500/50 rounded-lg text-red-400">
-                {testError}
-              </div>
-            )}
-            
-            {testResults && testResults.length > 0 && (
-              <div className="mt-4 p-3 bg-green-500/20 border border-green-500/50 rounded-lg">
-                <p className="text-green-400 mb-2">API Working! Found {testResults.length} teams:</p>
-                <ul className="text-white text-sm">
-                  {testResults.map(team => (
-                    <li key={team.id} className="flex items-center gap-2 py-1">
-                      <img src={team.logo} alt={team.name} className="w-6 h-6 object-contain" />
-                      {team.name}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            )}
-            
-            {testResults && testResults.length === 0 && !testError && (
-              <div className="mt-4 p-3 bg-yellow-500/20 border border-yellow-500/50 rounded-lg text-yellow-400">
-                API returned 0 results. Check console for details.
-              </div>
-            )}
-          </div>
-
-          {/* Grid for cards - 1 mobile, 2 tablet, 3 desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Empty cards placeholder */}
-            <div className="glass rounded-xl p-6 h-64 flex items-center justify-center border-dashed border-2 border-[#00d4ff]/30">
-              <span className="text-[#00d4ff]/50">Cards will appear here</span>
-            </div>
+            {cards.map((card) => (
+              !card.homeTeam && !card.awayTeam ? (
+                <EmptyCard 
+                  key={card.id} 
+                  onClick={() => handleEmptyCardClick(card.id)} 
+                />
+              ) : (
+                <AnalyticsCard 
+                  key={card.id} 
+                  card={card} 
+                  onDelete={handleDeleteCard} 
+                />
+              )
+            ))}
           </div>
         </div>
       </main>
+
+      <TeamSearchModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSelectTeams={handleSelectTeams}
+      />
     </div>
   );
 }
