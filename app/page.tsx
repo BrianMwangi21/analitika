@@ -130,7 +130,7 @@ export default function Home() {
       <main className="flex-1 px-4 pb-8">
         <div className="mx-auto max-w-7xl">
           {/* Responsive Grid - 1 mobile, 2 tablet, 3 desktop */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {cards.map((card, index) => (
               // Staggered animation based on index
               <div 

@@ -261,3 +261,141 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Test localStorage persistence
 - Test on mobile
 - [x] - COMPLETED
+
+---
+
+## Phase 12: Mobile UI Optimization
+
+### Step 41: Condense Styles for Mobile
+- Reduce padding and margins on mobile viewport
+- Make card content more compact
+- Optimize font sizes for smaller screens
+- Ensure touch targets are appropriately sized
+- [x] - COMPLETED
+
+---
+
+## Phase 13: Odds Selection Feature
+
+### Step 42: Make Odds Clickable
+- Add onClick handler to each odds box in AnalyticsCard
+- Toggle selected state when clicked
+- Apply highlight styling (cyan border/glow) when selected
+- Allow multiple odds selection across markets
+- [ ] - PENDING
+
+### Step 43: Track Selected Odds State
+- Add selectedOdds state to AnalyticsCard
+- Store selected odds data (market, value, odds)
+- Allow deselection by clicking again
+- Display count of selected odds
+- [ ] - PENDING
+
+---
+
+## Phase 14: Analyze Odds Button
+
+### Step 44: Add Analyze Odds Button
+- Create button below subtitle "click odds to analyze"
+- Style with JARVIS theme (cyan gradient, glass effect)
+- Show helper text/tooltip on hover
+- Position prominently in card header area
+- [ ] - PENDING
+
+### Step 45: Implement Button Activation Logic
+- Disable button when less than 2 odds selected
+- Enable button when 2+ odds are selected
+- Add visual indicator for active state
+- Show count of selected odds on button
+- [ ] - PENDING
+
+---
+
+## Phase 15: LLM Integration Setup
+
+### Step 46: Install OpenRouter Provider
+- Run `npm install @openrouter/ai-sdk-provider`
+- Add to project dependencies
+- [ ] - PENDING
+
+### Step 47: Setup Environment Variables
+- Add OPENROUTER_API_KEY to .env.local
+- Update AGENTS.md with new env variable
+- [ ] - PENDING
+
+### Step 48: Create LLM Client
+- Create `lib/llm.ts` with OpenRouter configuration
+- Setup model: 'tngtech/tng-r1t-chimera:free'
+- Create analyzeOdds function
+- Handle API errors and rate limits
+- [ ] - PENDING
+
+---
+
+## Phase 16: Analysis Page
+
+### Step 49: Create Analysis Page Route
+- Create `app/analysis/page.tsx`
+- Setup page layout with JARVIS theme
+- Add back button to return to dashboard
+- [ ] - PENDING
+
+### Step 50: Create Data Preparation Function
+- Gather selected odds data from all cards
+- Collect team stats, head-to-head history
+- Format data for LLM prompt
+- Include match context and current form
+- [ ] - PENDING
+
+### Step 51: Implement Analysis Flow
+- On analyze button click, navigate to analysis page
+- Pass selected odds data via state or query params
+- Show loading state while fetching analysis
+- [ ] - PENDING
+
+---
+
+## Phase 17: Analysis Results Display
+
+### Step 52: Create AnalysisResult Component
+- Display LLM analysis in structured format
+- Show selected odds summary
+- Highlight key insights and recommendations
+- Add confidence indicators
+- [ ] - PENDING
+
+### Step 53: Format Analysis Output
+- Parse LLM response into readable sections
+- Add risk assessment display
+- Show probability estimates if provided
+- Style with JARVIS aesthetics
+- [ ] - PENDING
+
+### Step 54: Add Error Handling for LLM
+- Handle API failures gracefully
+- Show retry button
+- Display fallback message if analysis fails
+- Cache previous analyses
+- [ ] - PENDING
+
+---
+
+## Phase 18: Testing & Polish
+
+### Step 55: Test Odds Selection Flow
+- Test selecting/deselecting odds
+- Verify button activation logic
+- Test on mobile touch devices
+- [ ] - PENDING
+
+### Step 56: Test LLM Integration
+- Test with various data sets
+- Verify API key configuration
+- Test error scenarios
+- [ ] - PENDING
+
+### Step 57: Final Mobile Optimization
+- Ensure analysis page is mobile-friendly
+- Test navigation flow on mobile
+- Optimize loading states for mobile
+- [ ] - PENDING
