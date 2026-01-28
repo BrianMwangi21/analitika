@@ -124,7 +124,7 @@ export default function AnalysisPage() {
             <div className="glass rounded-xl p-8 md:p-12 text-center">
               <Loader2 className="w-8 h-8 mx-auto mb-4 text-[#00d4ff] animate-spin" />
               <h2 className="text-[#00d4ff] text-lg font-semibold mb-2">Analyzing Your Selections</h2>
-              <p className="text-[#00d4ff]/50 text-sm">Our Kenyan analyst is crunching the numbers and reading the vibe...</p>
+              <p className="text-[#00d4ff]/50 text-sm">Bazu wetu is crunching the numbers and reading the vibe...</p>
             </div>
           )}
 
