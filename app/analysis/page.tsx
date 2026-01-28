@@ -30,67 +30,111 @@ export default function AnalysisPage() {
   const [error, setError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  // Generate cache key from selected odds
+  const getCacheKey = (odds: SelectedOdd[]) => {
+    const sortedOdds = [...odds].sort((a, b) => a.cardId.localeCompare(b.cardId));
+    return `analitika-analysis-cache-${JSON.stringify(sortedOdds.map(o => ({
+      cardId: o.cardId,
+      market: o.market,
+      selection: o.selection
+    })))}`;
+  };
+
+  const loadAndAnalyze = async (forceRefresh = false) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      const savedOdds = localStorage.getItem('analitika-selected-odds');
+      if (!savedOdds) {
+        setError('No odds selected for analysis');
+        setLoading(false);
+        return;
+      }
+
+      const parsedOdds: SelectedOdd[] = JSON.parse(savedOdds);
+      if (parsedOdds.length < 2) {
+        setError('Please select at least 2 odds before analyzing');
+        setLoading(false);
+        return;
+      }
+
+      setSelectedOdds(parsedOdds);
+
+      // Check cache first (unless force refresh)
+      if (!forceRefresh) {
+        const cacheKey = getCacheKey(parsedOdds);
+        const cachedResult = localStorage.getItem(cacheKey);
+        if (cachedResult) {
+          try {
+            const parsedCache = JSON.parse(cachedResult);
+            // Check if cache is less than 1 hour old
+            const cacheAge = Date.now() - parsedCache.timestamp;
+            if (cacheAge < 3600000) { // 1 hour
+              setAnalysis(parsedCache.data);
+              setLoading(false);
+              return;
+            }
+          } catch {
+            // Invalid cache, continue to fetch
+          }
+        }
+      }
+      
+      // Get team stats from localStorage
+      let teamStats = null;
+      try {
+        const statsData = localStorage.getItem('analitika-stats');
+        if (statsData) {
+          teamStats = JSON.parse(statsData);
+        }
+      } catch {
+        // Stats not available
+      }
+
+      // Call API route
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          selectedOdds: parsedOdds,
+          teamStats,
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to analyze odds');
+      }
+
+      const result = await response.json();
+      
+      // Cache the result
+      const cacheKey = getCacheKey(parsedOdds);
+      localStorage.setItem(cacheKey, JSON.stringify({
+        data: result,
+        timestamp: Date.now()
+      }));
+      
+      setAnalysis(result);
+      setLoading(false);
+    } catch (err) {
+      console.error('Error during analysis:', err);
+      setError(err instanceof Error ? err.message : 'Failed to analyze odds');
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     setMounted(true);
-    
-    const loadAndAnalyze = async () => {
-      try {
-        const savedOdds = localStorage.getItem('analitika-selected-odds');
-        if (!savedOdds) {
-          setError('No odds selected for analysis');
-          setLoading(false);
-          return;
-        }
-
-        const parsedOdds: SelectedOdd[] = JSON.parse(savedOdds);
-        if (parsedOdds.length < 2) {
-          setError('Please select at least 2 odds before analyzing');
-          setLoading(false);
-          return;
-        }
-
-        setSelectedOdds(parsedOdds);
-        
-        // Get team stats from localStorage
-        let teamStats = null;
-        try {
-          const statsData = localStorage.getItem('analitika-stats');
-          if (statsData) {
-            teamStats = JSON.parse(statsData);
-          }
-        } catch {
-          // Stats not available
-        }
-
-        // Call API route instead of direct LLM
-        const response = await fetch('/api/analyze', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            selectedOdds: parsedOdds,
-            teamStats,
-          }),
-        });
-
-        if (!response.ok) {
-          const errorData = await response.json();
-          throw new Error(errorData.error || 'Failed to analyze odds');
-        }
-
-        const result = await response.json();
-        setAnalysis(result);
-        setLoading(false);
-      } catch (err) {
-        console.error('Error during analysis:', err);
-        setError(err instanceof Error ? err.message : 'Failed to analyze odds');
-        setLoading(false);
-      }
-    };
-
     loadAndAnalyze();
   }, []);
+
+  const handleRefresh = () => {
+    loadAndAnalyze(true);
+  };
 
   const handleBack = () => router.push('/');
 
@@ -133,7 +177,7 @@ export default function AnalysisPage() {
               <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-red-400" />
               <h2 className="text-red-400 text-lg font-semibold mb-2">Analysis Failed</h2>
               <p className="text-white/70 text-sm mb-6">{error}</p>
-              <button onClick={() => window.location.reload()} className="px-6 py-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30 hover:bg-red-500/30 transition-colors">
+              <button onClick={handleRefresh} className="px-6 py-2 bg-red-500/20 text-red-400 rounded-lg border border-red-500/30 hover:bg-red-500/30 transition-colors">
                 Try Again
               </button>
             </div>
@@ -174,6 +218,16 @@ export default function AnalysisPage() {
                 <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown>{analysis.recommendation}</ReactMarkdown>
                 </div>
+              </div>
+
+              {/* Refresh Button */}
+              <div className="flex justify-center pt-4">
+                <button
+                  onClick={handleRefresh}
+                  className="px-4 py-2 text-sm text-[#00d4ff]/70 hover:text-[#00d4ff] border border-[#00d4ff]/30 rounded-lg hover:bg-[#00d4ff]/10 transition-colors"
+                >
+                  Refresh Analysis
+                </button>
               </div>
 
               {/* Selected Odds - Moved to bottom */}
