@@ -86,31 +86,31 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Create `components/TeamSearchModal.tsx`
 - Add backdrop with blur
 - Add centered glass modal
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 13: Add Search Input
 - Create styled search field
 - Add Search icon
 - Setup state for search query
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 14: Add Team Search Results
 - Display list of teams below input
 - Show team logo and name
 - Limit to 10 results
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 15: Handle Team Selection Flow
 - First click selects home team
 - Reset search and show "Select away team"
 - Second click selects away team
 - Prevent selecting same team twice
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 16: Add Continue Button
 - Show after both teams selected
 - Trigger API data fetch on click
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ---
 
