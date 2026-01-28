@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://api.api-football.com/v3';
+const API_BASE_URL = 'https://v3.football.api-sports.io';
 
 interface ApiOptions {
   method?: 'GET' | 'POST' | 'PUT' | 'DELETE';
