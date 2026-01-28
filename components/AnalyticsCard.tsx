@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { Card, Team, TeamStats, HeadToHead, Odds } from '@/types';
 import { getTeamStats, getHeadToHead } from '@/lib/footballApi';
+import LoadingCard from './LoadingCard';
+import ErrorCard from './ErrorCard';
 
 interface AnalyticsCardProps {
   card: Card;
@@ -15,6 +17,7 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
   const [awayStats, setAwayStats] = useState<TeamStats | null>(null);
   const [h2h, setH2h] = useState<HeadToHead | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (card.homeTeam && card.awayTeam) {
@@ -24,16 +27,23 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
 
   const fetchAnalytics = async () => {
     setLoading(true);
-    const [homeStatsData, awayStatsData, h2hData] = await Promise.all([
-      getTeamStats(card.homeTeam!.id),
-      getTeamStats(card.awayTeam!.id),
-      getHeadToHead(card.homeTeam!.id, card.awayTeam!.id),
-    ]);
+    setError(null);
+    
+    try {
+      const [homeStatsData, awayStatsData, h2hData] = await Promise.all([
+        getTeamStats(card.homeTeam!.id),
+        getTeamStats(card.awayTeam!.id),
+        getHeadToHead(card.homeTeam!.id, card.awayTeam!.id),
+      ]);
 
-    setHomeStats(homeStatsData);
-    setAwayStats(awayStatsData);
-    setH2h(h2hData);
-    setLoading(false);
+      setHomeStats(homeStatsData);
+      setAwayStats(awayStatsData);
+      setH2h(h2hData);
+    } catch (err) {
+      setError('Failed to load analytics data. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const homeWins = h2h?.homeWins || 0;
@@ -53,9 +63,12 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
       </button>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="animate-pulse text-[#00d4ff]">Loading...</div>
-        </div>
+        <LoadingCard />
+      ) : error ? (
+        <ErrorCard 
+          message={error} 
+          onRetry={fetchAnalytics} 
+        />
       ) : (
         <>
           {/* Team Header */}
