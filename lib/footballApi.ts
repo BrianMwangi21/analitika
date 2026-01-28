@@ -1,3 +1,68 @@
+// API Response Types
+interface ApiFixture {
+  fixture: {
+    id: number;
+    date: string;
+  };
+  teams: {
+    home: {
+      id: number;
+      name: string;
+      logo: string;
+    };
+    away: {
+      id: number;
+      name: string;
+      logo: string;
+    };
+  };
+  league: {
+    name: string;
+    logo: string;
+  };
+}
+
+interface OddValue {
+  value: string;
+  odd: string;
+}
+
+interface Bet {
+  id: number;
+  name: string;
+  values: OddValue[];
+}
+
+interface TeamSearchItem {
+  team: {
+    id: number;
+    name: string;
+    logo: string;
+  };
+}
+
+interface HeadToHeadFixture {
+  fixture: {
+    id: number;
+    date: string;
+  };
+  teams: {
+    home: {
+      id: number;
+      name: string;
+      logo: string;
+    };
+    away: {
+      id: number;
+      name: string;
+      logo: string;
+    };
+  };
+  goals: {
+    home: number;
+    away: number;
+  };
+}
 import fetchApi from './api';
 import { Team, TeamStats, HeadToHead, Match, Odds, ExtendedOdds, Fixture } from '@/types';
 
@@ -7,7 +72,7 @@ export async function getTodaysFixtures(): Promise<Fixture[]> {
     const data = await fetchApi(`/fixtures?date=${today}`);
     
     if (data && data.response) {
-      const fixtures: Fixture[] = data.response.map((fixture: any) => ({
+      const fixtures: Fixture[] = data.response.map((fixture: ApiFixture) => ({
         id: fixture.fixture.id,
         date: today,
         time: fixture.fixture.date,
@@ -44,23 +109,23 @@ export async function getFixtureOdds(fixtureId: number): Promise<ExtendedOdds | 
       const firstBookmaker = data.response[0]?.bookmakers?.[0];
       const bets = firstBookmaker?.bets || [];
       
-      const matchWinnerBet = bets.find((bet: any) => bet.id === 1)?.values;
+      const matchWinnerBet = bets.find((bet: Bet) => bet.id === 1)?.values;
       const matchWinner = matchWinnerBet ? {
-        homeWin: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Home')?.odd) || 0,
-        draw: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Draw')?.odd) || 0,
-        awayWin: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Away')?.odd) || 0,
+        homeWin: parseFloat(matchWinnerBet.find((o: OddValue) => o.value === 'Home')?.odd) || 0,
+        draw: parseFloat(matchWinnerBet.find((o: OddValue) => o.value === 'Draw')?.odd) || 0,
+        awayWin: parseFloat(matchWinnerBet.find((o: OddValue) => o.value === 'Away')?.odd) || 0,
       } : { homeWin: 0, draw: 0, awayWin: 0 };
       
-      const overUnderBet = bets.find((bet: any) => bet.id === 5)?.values;
+      const overUnderBet = bets.find((bet: Bet) => bet.id === 5)?.values;
       const overUnder25 = overUnderBet ? {
-        over: parseFloat(overUnderBet.find((o: any) => o.value === 'Over 2.5')?.odd) || 0,
-        under: parseFloat(overUnderBet.find((o: any) => o.value === 'Under 2.5')?.odd) || 0,
+        over: parseFloat(overUnderBet.find((o: OddValue) => o.value === 'Over 2.5')?.odd) || 0,
+        under: parseFloat(overUnderBet.find((o: OddValue) => o.value === 'Under 2.5')?.odd) || 0,
       } : null;
       
-      const bttsBet = bets.find((bet: any) => bet.id === 8)?.values;
+      const bttsBet = bets.find((bet: Bet) => bet.id === 8)?.values;
       const btts = bttsBet ? {
-        yes: parseFloat(bttsBet.find((o: any) => o.value === 'Yes')?.odd) || 0,
-        no: parseFloat(bttsBet.find((o: any) => o.value === 'No')?.odd) || 0,
+        yes: parseFloat(bttsBet.find((o: OddValue) => o.value === 'Yes')?.odd) || 0,
+        no: parseFloat(bttsBet.find((o: OddValue) => o.value === 'No')?.odd) || 0,
       } : null;
       
       return {
@@ -84,7 +149,7 @@ export async function searchTeams(query: string): Promise<Team[]> {
     const data = await fetchApi(`/teams?search=${encodeURIComponent(query)}`);
     
     if (data && data.response) {
-      return data.response.map((item: any) => ({
+      return data.response.map((item: TeamSearchItem) => ({
         id: item.team.id,
         name: item.team.name,
         logo: item.team.logo,
@@ -128,7 +193,7 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
     const data = await fetchApi(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}`);
     
     if (data && data.response) {
-      const matches: Match[] = data.response.map((fixture: any) => {
+      const matches: Match[] = data.response.map((fixture: ApiFixture) => {
         const homeGoals = fixture.goals?.home ?? 0;
         const awayGoals = fixture.goals?.away ?? 0;
         const homeId = fixture.teams.home.id;

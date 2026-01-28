@@ -5,44 +5,57 @@ import Header from '@/components/Header';
 import EmptyCard from '@/components/EmptyCard';
 import GameSelectorModal from '@/components/GameSelectorModal';
 import AnalyticsCard from '@/components/AnalyticsCard';
-import { Card, Team, Fixture } from '@/types';
-import { getTodaysFixtures, getFixtureOdds } from '@/lib/footballApi';
+import { Card, Fixture } from '@/types';
+import { getFixtureOdds } from '@/lib/footballApi';
 
 const STORAGE_KEY = 'analitika-cards';
 
-export default function Home() {
-  const [cards, setCards] = useState<Card[]>([{ 
+// Lazy initializer for state from localStorage
+const getInitialCards = (): Card[] => {
+  if (typeof window === 'undefined') {
+    return [{ 
+      id: '1', 
+      homeTeam: null, 
+      awayTeam: null, 
+      analytics: null, 
+      isLoading: false, 
+      error: null 
+    }];
+  }
+  
+  try {
+    const savedCards = localStorage.getItem(STORAGE_KEY);
+    if (savedCards) {
+      const parsed = JSON.parse(savedCards) as Card[];
+      // Add empty card if no empty card exists
+      if (!parsed.some(c => !c.homeTeam && !c.awayTeam)) {
+        parsed.push({ 
+          id: Date.now().toString(), 
+          homeTeam: null, 
+          awayTeam: null, 
+          analytics: null, 
+          isLoading: false, 
+          error: null 
+        });
+      }
+      return parsed;
+    }
+  } catch (error) {
+    console.error('Error loading from localStorage:', error);
+  }
+  
+  return [{ 
     id: '1', 
     homeTeam: null, 
     awayTeam: null, 
     analytics: null, 
     isLoading: false, 
     error: null 
-  }]);
+  }];
+};
 
-  // Load from LocalStorage on mount
-  useEffect(() => {
-    try {
-      const savedCards = localStorage.getItem(STORAGE_KEY);
-      if (savedCards) {
-        const parsed = JSON.parse(savedCards) as Card[];
-        // Add empty card if no empty card exists
-        if (!parsed.some(c => !c.homeTeam && !c.awayTeam)) {
-          parsed.push({ 
-            id: Date.now().toString(), 
-            homeTeam: null, 
-            awayTeam: null, 
-            analytics: null, 
-            isLoading: false, 
-            error: null 
-          });
-        }
-        setCards(parsed);
-      }
-    } catch (error) {
-      console.error('Error loading from localStorage:', error);
-    }
-  }, []);
+export default function Home() {
+  const [cards, setCards] = useState<Card[]>(getInitialCards);
 
   // Save to LocalStorage when cards change, exclude empty cards
   useEffect(() => {

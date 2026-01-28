@@ -1,8 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { X } from 'lucide-react';
-import { Card, TeamStats, HeadToHead, Odds, ExtendedOdds } from '@/types';
+import { Card, HeadToHead, Odds, ExtendedOdds } from '@/types';
 import { getTeamStats, getHeadToHead } from '@/lib/footballApi';
 import LoadingCard from './LoadingCard';
 import ErrorCard from './ErrorCard';
@@ -23,8 +23,6 @@ function isExtendedOdds(odds: Odds | ExtendedOdds): odds is ExtendedOdds {
 }
 
 export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
-  const [homeStats, setHomeStats] = useState<TeamStats | null>(null);
-  const [awayStats, setAwayStats] = useState<TeamStats | null>(null);
   const [h2h, setH2h] = useState<HeadToHead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,13 +55,7 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
     );
   };
 
-  useEffect(() => {
-    if (card.homeTeam && card.awayTeam) {
-      fetchAnalytics();
-    }
-  }, [card.homeTeam, card.awayTeam]);
-
-  const fetchAnalytics = async () => {
+  const fetchAnalytics = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -74,15 +66,25 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
         getHeadToHead(card.homeTeam!.id, card.awayTeam!.id),
       ]);
 
-      setHomeStats(homeStatsData);
-      setAwayStats(awayStatsData);
+      // Store stats in localStorage for later analysis if needed
+      localStorage.setItem('analitika-stats', JSON.stringify({
+        home: homeStatsData,
+        away: awayStatsData
+      }));
+      
       setH2h(h2hData);
-    } catch (err) {
+    } catch (_err) {
       setError('Failed to load analytics data. Please try again.');
     } finally {
       setLoading(false);
     }
-  };
+  }, [card.homeTeam, card.awayTeam]);
+
+  useEffect(() => {
+    if (card.homeTeam && card.awayTeam) {
+      fetchAnalytics();
+    }
+  }, [card.homeTeam, card.awayTeam, fetchAnalytics]);
 
   const homeWins = h2h?.homeWins || 0;
   const awayWins = h2h?.awayWins || 0;
