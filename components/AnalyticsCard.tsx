@@ -92,35 +92,35 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             </div>
           </div>
 
-          {/* Recent Form */}
+          {/* Recent Form - Head to Head Results */}
           <div className="mb-4">
-            <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Recent Form</h3>
+            <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Head-to-Head Form</h3>
             <div className="flex justify-between gap-4">
               <div className="flex gap-1">
-                {homeStats?.form.slice(-5).map((result, i) => (
+                {h2h?.matches.slice(0, 5).reverse().map((match, i) => (
                   <span
                     key={i}
                     className={`w-6 h-6 flex items-center justify-center text-xs rounded ${
-                      result === 'W' ? 'bg-green-500/30 text-green-400' :
-                      result === 'D' ? 'bg-yellow-500/30 text-yellow-400' :
+                      match.result === 'W' ? 'bg-green-500/30 text-green-400' :
+                      match.result === 'D' ? 'bg-yellow-500/30 text-yellow-400' :
                       'bg-red-500/30 text-red-400'
                     }`}
                   >
-                    {result}
+                    {match.result === 'W' ? 'W' : match.result === 'D' ? 'D' : 'L'}
                   </span>
                 ))}
               </div>
               <div className="flex gap-1">
-                {awayStats?.form.slice(-5).map((result, i) => (
+                {h2h?.matches.slice(0, 5).reverse().map((match, i) => (
                   <span
                     key={i}
                     className={`w-6 h-6 flex items-center justify-center text-xs rounded ${
-                      result === 'W' ? 'bg-green-500/30 text-green-400' :
-                      result === 'D' ? 'bg-yellow-500/30 text-yellow-400' :
-                      'bg-red-500/30 text-red-400'
+                      match.result === 'W' ? 'bg-red-500/30 text-red-400' :
+                      match.result === 'D' ? 'bg-yellow-500/30 text-yellow-400' :
+                      'bg-green-500/30 text-green-400'
                     }`}
                   >
-                    {result}
+                    {match.result === 'W' ? 'L' : match.result === 'D' ? 'D' : 'W'}
                   </span>
                 ))}
               </div>
