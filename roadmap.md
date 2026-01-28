@@ -282,7 +282,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Toggle selected state when clicked
 - Apply highlight styling (cyan border/glow) when selected
 - Allow multiple odds selection across markets
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 43: Track Selected Odds State
 - Add selectedOdds state to AnalyticsCard

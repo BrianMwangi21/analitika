@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { Card, Team, TeamStats, HeadToHead, Odds, ExtendedOdds } from '@/types';
+import { Card, TeamStats, HeadToHead, Odds, ExtendedOdds } from '@/types';
 import { getTeamStats, getHeadToHead } from '@/lib/footballApi';
 import LoadingCard from './LoadingCard';
 import ErrorCard from './ErrorCard';
@@ -10,6 +10,12 @@ import ErrorCard from './ErrorCard';
 interface AnalyticsCardProps {
   card: Card;
   onDelete: (id: string) => void;
+}
+
+interface SelectedOdd {
+  market: string;
+  selection: string;
+  value: number;
 }
 
 function isExtendedOdds(odds: Odds | ExtendedOdds): odds is ExtendedOdds {
@@ -22,6 +28,31 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
   const [h2h, setH2h] = useState<HeadToHead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  
+  // Track selected odds
+  const [selectedOdds, setSelectedOdds] = useState<SelectedOdd[]>([]);
+
+  const toggleOdd = (market: string, selection: string, value: number) => {
+    setSelectedOdds(prev => {
+      const exists = prev.some(
+        odd => odd.market === market && odd.selection === selection
+      );
+      
+      if (exists) {
+        return prev.filter(
+          odd => !(odd.market === market && odd.selection === selection)
+        );
+      }
+      
+      return [...prev, { market, selection, value }];
+    });
+  };
+
+  const isSelected = (market: string, selection: string) => {
+    return selectedOdds.some(
+      odd => odd.market === market && odd.selection === selection
+    );
+  };
 
   useEffect(() => {
     if (card.homeTeam && card.awayTeam) {
@@ -169,18 +200,39 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             <div className="mb-3 md:mb-4 p-2 md:p-3 glass rounded-lg border border-[#00d4ff]/20">
               <h3 className="text-[#00d4ff] text-xs md:text-sm font-semibold mb-1 md:mb-2">1X2 Odds</h3>
               <div className="flex justify-between text-center">
-                <div className="flex-1">
+                <button
+                  onClick={() => toggleOdd('1X2', '1', odds1X2.homeWin)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('1X2', '1') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">1</div>
                   <div className="text-white font-bold text-base md:text-lg">{odds1X2.homeWin.toFixed(2)}</div>
-                </div>
-                <div className="flex-1">
+                </button>
+                <button
+                  onClick={() => toggleOdd('1X2', 'X', odds1X2.draw)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('1X2', 'X') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">X</div>
                   <div className="text-white font-bold text-base md:text-lg">{odds1X2.draw.toFixed(2)}</div>
-                </div>
-                <div className="flex-1">
+                </button>
+                <button
+                  onClick={() => toggleOdd('1X2', '2', odds1X2.awayWin)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('1X2', '2') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">2</div>
                   <div className="text-white font-bold text-base md:text-lg">{odds1X2.awayWin.toFixed(2)}</div>
-                </div>
+                </button>
               </div>
             </div>
           )}
@@ -190,14 +242,28 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             <div className="mb-3 md:mb-4 p-2 md:p-3 glass rounded-lg border border-[#00d4ff]/20">
               <h3 className="text-[#00d4ff] text-xs md:text-sm font-semibold mb-1 md:mb-2">Over/Under 2.5</h3>
               <div className="flex justify-between text-center">
-                <div className="flex-1">
+                <button
+                  onClick={() => toggleOdd('Over/Under 2.5', 'Over', extendedOdds!.overUnder25!.over)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('Over/Under 2.5', 'Over') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">Over</div>
                   <div className="text-white font-bold text-base md:text-lg">{extendedOdds.overUnder25.over.toFixed(2)}</div>
-                </div>
-                <div className="flex-1">
+                </button>
+                <button
+                  onClick={() => toggleOdd('Over/Under 2.5', 'Under', extendedOdds!.overUnder25!.under)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('Over/Under 2.5', 'Under') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">Under</div>
                   <div className="text-white font-bold text-base md:text-lg">{extendedOdds.overUnder25.under.toFixed(2)}</div>
-                </div>
+                </button>
               </div>
             </div>
           )}
@@ -207,14 +273,28 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             <div className="mb-3 md:mb-4 p-2 md:p-3 glass rounded-lg border border-[#00d4ff]/20">
               <h3 className="text-[#00d4ff] text-xs md:text-sm font-semibold mb-1 md:mb-2">Both Teams To Score</h3>
               <div className="flex justify-between text-center">
-                <div className="flex-1">
+                <button
+                  onClick={() => toggleOdd('BTTS', 'Yes', extendedOdds!.btts!.yes)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('BTTS', 'Yes') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">Yes</div>
                   <div className="text-white font-bold text-base md:text-lg">{extendedOdds.btts.yes.toFixed(2)}</div>
-                </div>
-                <div className="flex-1">
+                </button>
+                <button
+                  onClick={() => toggleOdd('BTTS', 'No', extendedOdds!.btts!.no)}
+                  className={`flex-1 p-1 md:p-2 rounded transition-all ${
+                    isSelected('BTTS', 'No') 
+                      ? 'bg-[#00d4ff]/30 border border-[#00d4ff] shadow-[0_0_15px_rgba(0,212,255,0.3)]' 
+                      : 'hover:bg-[#00d4ff]/10'
+                  }`}
+                >
                   <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-1">No</div>
                   <div className="text-white font-bold text-base md:text-lg">{extendedOdds.btts.no.toFixed(2)}</div>
-                </div>
+                </button>
               </div>
             </div>
           )}
