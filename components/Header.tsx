@@ -16,7 +16,10 @@ export default function Header({ selectedOddsCount, onAnalyzeClick, isAnalyzing 
       <h1 className="text-4xl md:text-5xl font-bold text-gradient mb-2">
         analitika
       </h1>
-      <p className="text-xs md:text-sm text-[#00d4ff]/70 tracking-wider mb-4">
+      <p className="text-xs md:text-sm text-[#00d4ff]/70 tracking-wider mb-2">
+        leo mhindi hashindi
+      </p>
+      <p className="text-[10px] md:text-xs text-[#00d4ff]/50 tracking-wider mb-4">
         click odds to analyze
       </p>
 
