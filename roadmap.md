@@ -125,17 +125,17 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 ### Step 18: Create searchTeams Function
 - Fetch teams by name
 - Return team array with id, name, logo
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 19: Create getTeamStats Function
 - Fetch team statistics for season
 - Return goals, form, win rate
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 20: Create getHeadToHead Function
 - Fetch last 5 matches between teams
 - Return results and scores
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ---
 
