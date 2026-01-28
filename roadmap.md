@@ -49,13 +49,13 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Change bg to #0a0a0f
 - Set font to monospace
 - Update metadata title to "analitika"
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 8: Create Header Component
 - Create `components/Header.tsx`
 - Display "analitika" title with cyan gradient
-- Display "leo mhindhi hashindi" subtitle
-- [ ] - PENDING
+- Display "leo mhindi hashindi" subtitle
+- [x] - COMPLETED
 
 ### Step 9: Update Page Layout
 - Update `app/page.tsx`
