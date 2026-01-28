@@ -79,18 +79,23 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
         };
       });
       
+      // Sort matches by date descending (most recent first)
+      const sortedMatches = matches.sort((a, b) => {
+        return new Date(b.date).getTime() - new Date(a.date).getTime();
+      });
+      
       let homeWins = 0;
       let awayWins = 0;
       let draws = 0;
       
-      matches.forEach(match => {
+      sortedMatches.forEach(match => {
         if (match.result === 'W') homeWins++;
         else if (match.result === 'L') awayWins++;
         else draws++;
       });
       
       return {
-        matches,
+        matches: sortedMatches,
         homeWins,
         awayWins,
         draws,
