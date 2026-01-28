@@ -321,7 +321,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 ### Step 47: Setup Environment Variables
 - Add OPENROUTER_API_KEY to .env.local
 - Update AGENTS.md with new env variable
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 48: Create LLM Client
 - Create `lib/llm.ts` with OpenRouter configuration

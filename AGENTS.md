@@ -14,3 +14,7 @@
 ### TO NOTE
 - Do not at any point run `npm run dev`, that is only reserved for the user. It is already running, so there is no need to start another server
 - You can run other checks for lint to make sure the type errors are resolved
+
+### Environment Variables
+- `API_FOOTBALL_KEY` - API-Football API key for fetching match data
+- `OPENROUTER_API_KEY` - OpenRouter API key for LLM analysis
