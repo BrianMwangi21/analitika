@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArrowLeft, Brain, AlertTriangle, Loader2 } from 'lucide-react';
-import { analyzeOdds } from '@/lib/llm';
+import ReactMarkdown from 'react-markdown';
 
 interface SelectedOdd {
   market: string;
@@ -50,7 +50,36 @@ export default function AnalysisPage() {
         }
 
         setSelectedOdds(parsedOdds);
-        const result = await analyzeOdds(parsedOdds);
+        
+        // Get team stats from localStorage
+        let teamStats = null;
+        try {
+          const statsData = localStorage.getItem('analitika-stats');
+          if (statsData) {
+            teamStats = JSON.parse(statsData);
+          }
+        } catch {
+          // Stats not available
+        }
+
+        // Call API route instead of direct LLM
+        const response = await fetch('/api/analyze', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            selectedOdds: parsedOdds,
+            teamStats,
+          }),
+        });
+
+        if (!response.ok) {
+          const errorData = await response.json();
+          throw new Error(errorData.error || 'Failed to analyze odds');
+        }
+
+        const result = await response.json();
         setAnalysis(result);
         setLoading(false);
       } catch (err) {
@@ -91,31 +120,6 @@ export default function AnalysisPage() {
 
       <main className="px-4 py-6 md:py-8">
         <div className="max-w-4xl mx-auto">
-          {selectedOdds.length > 0 && (
-            <div className="glass rounded-xl p-4 md:p-6 mb-6 border border-[#00d4ff]/20">
-              <h2 className="text-[#00d4ff] text-sm font-semibold mb-4 flex items-center gap-2">
-                <Brain className="w-4 h-4" />
-                Selected Odds ({selectedOdds.length})
-              </h2>
-              
-              <div className="space-y-2">
-                {selectedOdds.map((odd, index) => (
-                  <div key={`${odd.cardId}-${odd.market}-${odd.selection}`} className="flex items-center justify-between py-2 px-3 rounded bg-[#00d4ff]/5 border border-[#00d4ff]/10">
-                    <div className="flex items-center gap-2 text-xs md:text-sm">
-                      <span className="text-[#00d4ff]/50">{index + 1}.</span>
-                      <span className="text-white">{odd.homeTeam?.name || 'Home'} vs {odd.awayTeam?.name || 'Away'}</span>
-                    </div>
-                    <div className="flex items-center gap-3 text-xs">
-                      <span className="text-[#00d4ff]/70">{odd.market}</span>
-                      <span className="text-white font-bold">{odd.selection}</span>
-                      <span className="text-[#00d4ff] font-mono">@{odd.value.toFixed(2)}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
           {loading && (
             <div className="glass rounded-xl p-8 md:p-12 text-center">
               <Loader2 className="w-8 h-8 mx-auto mb-4 text-[#00d4ff] animate-spin" />
@@ -144,14 +148,16 @@ export default function AnalysisPage() {
 
               <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
                 <h3 className="text-[#00d4ff] text-sm font-semibold mb-3">Analysis</h3>
-                <div className="text-white/90 text-sm leading-relaxed whitespace-pre-wrap">
-                  {analysis.analysis}
+                <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown>{analysis.analysis}</ReactMarkdown>
                 </div>
               </div>
 
               <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
                 <h3 className="text-[#00d4ff] text-sm font-semibold mb-3">Recommendation</h3>
-                <p className="text-white/90 text-sm leading-relaxed">{analysis.recommendation}</p>
+                <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
+                  <ReactMarkdown>{analysis.recommendation}</ReactMarkdown>
+                </div>
               </div>
 
               <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
@@ -160,6 +166,32 @@ export default function AnalysisPage() {
                   {analysis.riskLevel}
                 </span>
               </div>
+
+              {/* Selected Odds - Moved to bottom */}
+              {selectedOdds.length > 0 && (
+                <div className="glass rounded-xl p-4 md:p-6 mt-6 border border-[#00d4ff]/20">
+                  <h2 className="text-[#00d4ff] text-sm font-semibold mb-4 flex items-center gap-2">
+                    <Brain className="w-4 h-4" />
+                    Selected Odds ({selectedOdds.length})
+                  </h2>
+                  
+                  <div className="space-y-2">
+                    {selectedOdds.map((odd, index) => (
+                      <div key={`${odd.cardId}-${odd.market}-${odd.selection}`} className="flex items-center justify-between py-2 px-3 rounded bg-[#00d4ff]/5 border border-[#00d4ff]/10">
+                        <div className="flex items-center gap-2 text-xs md:text-sm">
+                          <span className="text-[#00d4ff]/50">{index + 1}.</span>
+                          <span className="text-white">{odd.homeTeam?.name || 'Home'} vs {odd.awayTeam?.name || 'Away'}</span>
+                        </div>
+                        <div className="flex items-center gap-3 text-xs">
+                          <span className="text-[#00d4ff]/70">{odd.market}</span>
+                          <span className="text-white font-bold">{odd.selection}</span>
+                          <span className="text-[#00d4ff] font-mono">@{odd.value.toFixed(2)}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
