@@ -6,7 +6,7 @@ import EmptyCard from '@/components/EmptyCard';
 import GameSelectorModal from '@/components/GameSelectorModal';
 import AnalyticsCard from '@/components/AnalyticsCard';
 import { Card, Team, Fixture } from '@/types';
-import { searchTeams, getTodaysFixtures } from '@/lib/footballApi';
+import { getTodaysFixtures, getFixtureOdds } from '@/lib/footballApi';
 
 const STORAGE_KEY = 'analitika-cards';
 
@@ -62,10 +62,10 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleSelectGame = (fixture: Fixture) => {
+  const handleSelectGame = async (fixture: Fixture) => {
     if (!activeCardId) return;
 
-    // Update card with teams and odds
+    // First update card with teams (fast)
     setCards(prev => prev.map(card => 
       card.id === activeCardId 
         ? { 
@@ -73,7 +73,6 @@ export default function Home() {
             homeTeam: fixture.homeTeam, 
             awayTeam: fixture.awayTeam, 
             fixtureId: fixture.id,
-            odds: fixture.odds,
             isLoading: true 
           }
         : card
@@ -81,6 +80,16 @@ export default function Home() {
 
     setIsModalOpen(false);
     setActiveCardId(null);
+
+    // Then fetch odds separately (async)
+    const odds = await getFixtureOdds(fixture.id);
+    
+    // Update card with odds once fetched
+    setCards(prev => prev.map(card => 
+      card.id === activeCardId 
+        ? { ...card, odds: odds || undefined }
+        : card
+    ));
 
     // Add new empty card
     setCards(prev => [...prev, { 

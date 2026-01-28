@@ -7,57 +7,69 @@ export async function getTodaysFixtures(): Promise<Fixture[]> {
     const data = await fetchApi(`/fixtures?date=${today}`);
     
     if (data && data.response) {
-      // Get only fixtures with odds
-      const fixturesWithOdds: Fixture[] = [];
+      const fixtures: Fixture[] = data.response.map((fixture: {
+        fixture: { id: number; date: string };
+        teams: { 
+          home: { id: number; name: string; logo: string };
+          away: { id: number; name: string; logo: string };
+        };
+        league: { name: string; logo: string };
+      }) => ({
+        id: fixture.fixture.id,
+        date: today,
+        time: fixture.fixture.date,
+        homeTeam: {
+          id: fixture.teams.home.id,
+          name: fixture.teams.home.name,
+          logo: fixture.teams.home.logo,
+        },
+        awayTeam: {
+          id: fixture.teams.away.id,
+          name: fixture.teams.away.name,
+          logo: fixture.teams.away.logo,
+        },
+        odds: { homeWin: 0, draw: 0, awayWin: 0 }, // Placeholder, will fetch later
+        league: fixture.league.name,
+        leagueLogo: fixture.league.logo,
+      }));
       
-      for (const fixture of data.response) {
-        const fixtureId = fixture.fixture.id;
-        const oddsData = await fetchApi(`/odds?fixture=${fixtureId}`);
-        
-        if (oddsData && oddsData.response && oddsData.response.length > 0) {
-          const bookmaker = oddsData.response[0]?.bookmakers?.[0];
-          const odds = bookmaker?.bets?.find((bet: { id: number }) => bet.id === 1)?.values;
-          
-          if (odds && odds.length >= 3) {
-            const homeWin = odds.find((o: { value: string }) => o.value === 'Home')?.odd;
-            const draw = odds.find((o: { value: string }) => o.value === 'Draw')?.odd;
-            const awayWin = odds.find((o: { value: string }) => o.value === 'Away')?.odd;
-            
-            if (homeWin && draw && awayWin) {
-              fixturesWithOdds.push({
-                id: fixtureId,
-                date: today,
-                time: fixture.fixture.time || fixture.fixture.date,
-                homeTeam: {
-                  id: fixture.teams.home.id,
-                  name: fixture.teams.home.name,
-                  logo: fixture.teams.home.logo,
-                },
-                awayTeam: {
-                  id: fixture.teams.away.id,
-                  name: fixture.teams.away.name,
-                  logo: fixture.teams.away.logo,
-                },
-                odds: {
-                  homeWin: parseFloat(homeWin),
-                  draw: parseFloat(draw),
-                  awayWin: parseFloat(awayWin),
-                },
-                league: fixture.league.name,
-                leagueLogo: fixture.league.logo,
-              });
-            }
-          }
-        }
-      }
-      
-      return fixturesWithOdds;
+      return fixtures;
     }
     
     return [];
   } catch (error) {
     console.error('Error fetching today\'s fixtures:', error);
     return [];
+  }
+}
+
+export async function getFixtureOdds(fixtureId: number): Promise<Odds | null> {
+  try {
+    const data = await fetchApi(`/odds?fixture=${fixtureId}`);
+    
+    if (data && data.response && data.response.length > 0) {
+      const bookmaker = data.response[0]?.bookmakers?.[0];
+      const odds = bookmaker?.bets?.find((bet: { id: number }) => bet.id === 1)?.values;
+      
+      if (odds && odds.length >= 3) {
+        const homeWin = odds.find((o: { value: string }) => o.value === 'Home')?.odd;
+        const draw = odds.find((o: { value: string }) => o.value === 'Draw')?.odd;
+        const awayWin = odds.find((o: { value: string }) => o.value === 'Away')?.odd;
+        
+        if (homeWin && draw && awayWin) {
+          return {
+            homeWin: parseFloat(homeWin),
+            draw: parseFloat(draw),
+            awayWin: parseFloat(awayWin),
+          };
+        }
+      }
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('Error fetching fixture odds:', error);
+    return null;
   }
 }
 

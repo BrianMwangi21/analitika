@@ -79,7 +79,7 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
           <div className="text-red-400 text-center py-8">{error}</div>
         ) : fixtures.length === 0 ? (
           <div className="text-[#00d4ff]/50 text-center py-8">
-            No games with odds available for this date
+            No games scheduled for this date
           </div>
         ) : (
           <div className="overflow-y-auto flex-1 space-y-3 pr-2">
@@ -92,44 +92,27 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
                 }}
                 className="w-full glass rounded-lg p-4 hover:bg-[#00d4ff]/10 transition-all text-left group"
               >
-                <div className="flex items-center justify-between">
-                  {/* Teams */}
-                  <div className="flex items-center gap-4 flex-1">
-                    <div className="flex items-center gap-2">
-                      <img 
-                        src={fixture.homeTeam.logo} 
-                        alt={fixture.homeTeam.name}
-                        className="w-8 h-8 object-contain"
-                      />
-                      <span className="text-sm text-white hidden sm:block">{fixture.homeTeam.name}</span>
-                    </div>
-                    
-                    <span className="text-[#00d4ff] font-bold">VS</span>
-                    
-                    <div className="flex items-center gap-2">
-                      <img 
-                        src={fixture.awayTeam.logo} 
-                        alt={fixture.awayTeam.name}
-                        className="w-8 h-8 object-contain"
-                      />
-                      <span className="text-sm text-white hidden sm:block">{fixture.awayTeam.name}</span>
-                    </div>
+                 <div className="flex items-center gap-4">
+                  {/* Home Team */}
+                  <div className="flex items-center gap-2 flex-1">
+                    <img 
+                      src={fixture.homeTeam.logo} 
+                      alt={fixture.homeTeam.name}
+                      className="w-8 h-8 object-contain"
+                    />
+                    <span className="text-sm text-white hidden sm:block">{fixture.homeTeam.name}</span>
                   </div>
                   
-                  {/* Odds */}
-                  <div className="flex gap-2 text-xs">
-                    <div className="flex flex-col items-center">
-                      <span className="text-[#00d4ff]/50">1</span>
-                      <span className="text-white font-semibold">{fixture.odds.homeWin.toFixed(2)}</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-[#00d4ff]/50">X</span>
-                      <span className="text-white font-semibold">{fixture.odds.draw.toFixed(2)}</span>
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-[#00d4ff]/50">2</span>
-                      <span className="text-white font-semibold">{fixture.odds.awayWin.toFixed(2)}</span>
-                    </div>
+                  <span className="text-[#00d4ff] font-bold">VS</span>
+                  
+                  {/* Away Team */}
+                  <div className="flex items-center gap-2 flex-1">
+                    <img 
+                      src={fixture.awayTeam.logo} 
+                      alt={fixture.awayTeam.name}
+                      className="w-8 h-8 object-contain"
+                    />
+                    <span className="text-sm text-white hidden sm:block">{fixture.awayTeam.name}</span>
                   </div>
                 </div>
                 
