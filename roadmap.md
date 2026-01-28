@@ -120,7 +120,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Create `lib/api.ts`
 - Setup fetch wrapper with headers
 - Add base URL and error handling
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 18: Create searchTeams Function
 - Fetch teams by name
