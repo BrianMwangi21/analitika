@@ -193,7 +193,7 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
     const data = await fetchApi(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}`);
     
     if (data && data.response) {
-      const matches: Match[] = data.response.map((fixture: ApiFixture) => {
+      const matches: Match[] = data.response.map((fixture: HeadToHeadFixture) => {
         const homeGoals = fixture.goals?.home ?? 0;
         const awayGoals = fixture.goals?.away ?? 0;
         const homeId = fixture.teams.home.id;

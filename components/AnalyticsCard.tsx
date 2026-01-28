@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { X } from 'lucide-react';
 import { Card, HeadToHead, Odds, ExtendedOdds } from '@/types';
 import { getTeamStats, getHeadToHead } from '@/lib/footballApi';
@@ -10,6 +10,7 @@ import ErrorCard from './ErrorCard';
 interface AnalyticsCardProps {
   card: Card;
   onDelete: (id: string) => void;
+  onSelectedOddsChange?: (odds: SelectedOdd[]) => void;
 }
 
 interface SelectedOdd {
@@ -22,13 +23,16 @@ function isExtendedOdds(odds: Odds | ExtendedOdds): odds is ExtendedOdds {
   return 'matchWinner' in odds;
 }
 
-export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
+export default function AnalyticsCard({ card, onDelete, onSelectedOddsChange }: AnalyticsCardProps) {
   const [h2h, setH2h] = useState<HeadToHead | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   
   // Track selected odds
   const [selectedOdds, setSelectedOdds] = useState<SelectedOdd[]>([]);
+  
+  // Track if this is the first render
+  const isFirstRender = useRef(true);
 
   const toggleOdd = (market: string, selection: string, value: number) => {
     setSelectedOdds(prev => {
@@ -41,11 +45,11 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
         return prev.filter(
           odd => !(odd.market === market && odd.selection === selection)
         );
+      } else {
+        // Remove any other selection from the same market, then add the new one
+        const filtered = prev.filter(odd => odd.market !== market);
+        return [...filtered, { market, selection, value }];
       }
-      
-      // Remove any other selection from the same market, then add the new one
-      const filtered = prev.filter(odd => odd.market !== market);
-      return [...filtered, { market, selection, value }];
     });
   };
 
@@ -54,6 +58,16 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
       odd => odd.market === market && odd.selection === selection
     );
   };
+
+  // Notify parent when selected odds change (skip on first render)
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    onSelectedOddsChange?.(selectedOdds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedOdds]);
 
   const fetchAnalytics = useCallback(async () => {
     setLoading(true);
