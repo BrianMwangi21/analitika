@@ -62,6 +62,15 @@ body {
   }
 }
 
+@keyframes fadeIn {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
 .animate-shimmer {
   animation: shimmer 2s linear infinite;
 }
@@ -70,6 +79,18 @@ body {
   animation: slideUp 0.5s ease-out forwards;
 }
 
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out forwards;
+}
+
+/* Staggered Animation for Multiple Cards */
+.card-stagger-1 { animation-delay: 0ms; }
+.card-stagger-2 { animation-delay: 100ms; }
+.card-stagger-3 { animation-delay: 200ms; }
+.card-stagger-4 { animation-delay: 300ms; }
+.card-stagger-5 { animation-delay: 400ms; }
+.card-stagger-6 { animation-delay: 500ms; }
+
 /* Typography */
 .text-gradient {
   background: linear-gradient(90deg, var(--cyan), var(--blue));
@@ -77,3 +98,26 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Card Hover Effects */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card-hover:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 30px rgba(0, 212, 255, 0.15);
+}
+
+/* Empty Card Specific Hover */
+.empty-card-hover {
+  transition: all 0.3s ease;
+}
+
+.empty-card-hover:hover {
+  transform: scale(1.02);
+  box-shadow: 0 0 20px var(--glow-cyan);
+  border-color: var(--cyan);
+}
+
+/* Responsive Grid is handled by Tailwind classes in components */

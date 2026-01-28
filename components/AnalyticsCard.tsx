@@ -52,7 +52,7 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
   const totalMatches = homeWins + awayWins + draws;
 
   return (
-    <div className="glass rounded-xl p-6 relative group animate-slide-up">
+    <div className="glass rounded-xl p-6 relative group card-hover animate-slide-up">
       {/* Delete button */}
       <button
         onClick={() => onDelete(card.id)}

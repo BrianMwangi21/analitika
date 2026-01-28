@@ -53,6 +53,7 @@ export default function Home() {
       console.error('Error saving to localStorage:', error);
     }
   }, [cards]);
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [activeCardId, setActiveCardId] = useState<string | null>(null);
 
@@ -109,20 +110,25 @@ export default function Home() {
       
       <main className="flex-1 px-4 pb-8">
         <div className="mx-auto max-w-7xl">
+          {/* Step 39: Responsive Grid - 1 mobile, 2 tablet, 3 desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cards.map((card) => (
-              !card.homeTeam && !card.awayTeam ? (
-                <EmptyCard 
-                  key={card.id} 
-                  onClick={() => handleEmptyCardClick(card.id)} 
-                />
-              ) : (
-                <AnalyticsCard 
-                  key={card.id} 
-                  card={card} 
-                  onDelete={handleDeleteCard} 
-                />
-              )
+            {cards.map((card, index) => (
+              // Step 37: Staggered animation based on index
+              <div 
+                key={card.id} 
+                className={`animate-slide-up card-stagger-${Math.min(index + 1, 6)}`}
+              >
+                {!card.homeTeam && !card.awayTeam ? (
+                  <EmptyCard 
+                    onClick={() => handleEmptyCardClick(card.id)} 
+                  />
+                ) : (
+                  <AnalyticsCard 
+                    card={card} 
+                    onDelete={handleDeleteCard} 
+                  />
+                )}
+              </div>
             ))}
           </div>
         </div>
