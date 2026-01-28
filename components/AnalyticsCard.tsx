@@ -39,12 +39,15 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
       );
       
       if (exists) {
+        // Deselect if already selected
         return prev.filter(
           odd => !(odd.market === market && odd.selection === selection)
         );
       }
       
-      return [...prev, { market, selection, value }];
+      // Remove any other selection from the same market, then add the new one
+      const filtered = prev.filter(odd => odd.market !== market);
+      return [...filtered, { market, selection, value }];
     });
   };
 
