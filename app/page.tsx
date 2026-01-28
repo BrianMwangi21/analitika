@@ -174,7 +174,9 @@ export default function Home() {
           cardId,
           homeTeam: card?.homeTeam,
           awayTeam: card?.awayTeam,
-          fixtureId: card?.fixtureId
+          fixtureId: card?.fixtureId,
+          league: card?.league,
+          leagueLogo: card?.leagueLogo
         };
       })
     );
