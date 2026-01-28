@@ -97,7 +97,7 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Recent Form</h3>
             <div className="flex justify-between gap-4">
               <div className="flex gap-1">
-                {homeStats?.form.slice(0, 5).map((result, i) => (
+                {homeStats?.form.slice(-5).map((result, i) => (
                   <span
                     key={i}
                     className={`w-6 h-6 flex items-center justify-center text-xs rounded ${
@@ -111,7 +111,7 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
                 ))}
               </div>
               <div className="flex gap-1">
-                {awayStats?.form.slice(0, 5).map((result, i) => (
+                {awayStats?.form.slice(-5).map((result, i) => (
                   <span
                     key={i}
                     className={`w-6 h-6 flex items-center justify-center text-xs rounded ${
