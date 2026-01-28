@@ -111,7 +111,7 @@ export default function AnalysisPage() {
         <div className="max-w-4xl mx-auto flex items-center justify-between">
           <button onClick={handleBack} className="flex items-center gap-2 text-[#00d4ff]/70 hover:text-[#00d4ff]">
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-sm">Back to Dashboard</span>
+            <span className="text-sm">Back</span>
           </button>
           <h1 className="text-xl md:text-2xl font-bold text-gradient">Analysis</h1>
           <div className="w-[100px]" />
@@ -140,10 +140,26 @@ export default function AnalysisPage() {
           )}
 
           {!loading && !error && analysis && (
-            <div className="space-y-6">
-              <div className={`glass rounded-xl p-4 text-center border-2 ${getConfidenceColor(analysis.confidence)}`}>
-                <span className="text-xs text-[#00d4ff]/50 block mb-1">Confidence</span>
-                <span className="text-xl font-bold capitalize">{analysis.confidence}</span>
+            <div className="space-y-6 mb-6">
+              {/* Confidence & Risk Level Combined */}
+              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1 text-center p-3">
+                    <span className="text-xs text-[#00d4ff]/50 block mb-1">Confidence</span>
+                    <span className={`text-xl font-bold capitalize ${getConfidenceColor(analysis.confidence)}`}>
+                      {analysis.confidence}
+                    </span>
+                  </div>
+                  
+                  <div className="w-px h-16 bg-[#00d4ff]/30 mx-4" />
+                  
+                  <div className="flex-1 text-center p-3">
+                    <span className="text-xs text-[#00d4ff]/50 block mb-1">Risk Level</span>
+                    <span className={`text-xl font-bold capitalize ${analysis.riskLevel === 'low' ? 'text-green-400' : analysis.riskLevel === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}>
+                      {analysis.riskLevel}
+                    </span>
+                  </div>
+                </div>
               </div>
 
               <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
@@ -158,13 +174,6 @@ export default function AnalysisPage() {
                 <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown>{analysis.recommendation}</ReactMarkdown>
                 </div>
-              </div>
-
-              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
-                <h3 className="text-[#00d4ff] text-sm font-semibold mb-3">Risk Level</h3>
-                <span className={`text-lg font-bold capitalize ${analysis.riskLevel === 'low' ? 'text-green-400' : analysis.riskLevel === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}>
-                  {analysis.riskLevel}
-                </span>
               </div>
 
               {/* Selected Odds - Moved to bottom */}
