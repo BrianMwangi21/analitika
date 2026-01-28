@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
+import { Github } from 'lucide-react';
 import Header from '@/components/Header';
 import EmptyCard from '@/components/EmptyCard';
 import GameSelectorModal from '@/components/GameSelectorModal';
@@ -224,6 +225,24 @@ export default function Home() {
         onClose={() => setIsModalOpen(false)}
         onSelectGame={handleSelectGame}
       />
+
+      {/* Footer */}
+      <footer className="w-full py-6 px-4 border-t border-[#00d4ff]/10 mt-8">
+        <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-3">
+          <span className="text-[#00d4ff]/60 text-sm">
+            Made with <span className="text-red-400">love</span> by Kabiru
+          </span>
+          <a
+            href="https://github.com/BrianMwangi21/analitika"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 text-[#00d4ff]/60 hover:text-[#00d4ff] transition-colors text-sm"
+          >
+            <Github className="w-4 h-4" />
+            <span>GitHub</span>
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }
