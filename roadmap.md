@@ -71,12 +71,12 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 - Create `components/EmptyCard.tsx`
 - Add glassmorphism card with dashed border
 - Center plus icon from lucide-react
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 11: Add Hover and Click Effects
 - Add scale and glow on hover
 - Setup onClick handler to open modal
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ---
 
