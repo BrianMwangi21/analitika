@@ -64,4 +64,7 @@ export interface Card {
   error: string | null;
   fixtureId?: number;
   odds?: Odds;
+  time?: string;
+  league?: string;
+  leagueLogo?: string;
 }

@@ -65,7 +65,7 @@ export default function Home() {
   const handleSelectGame = async (fixture: Fixture) => {
     if (!activeCardId) return;
 
-    // First update card with teams (fast)
+    // First update card with teams and fixture info (fast)
     setCards(prev => prev.map(card => 
       card.id === activeCardId 
         ? { 
@@ -73,6 +73,9 @@ export default function Home() {
             homeTeam: fixture.homeTeam, 
             awayTeam: fixture.awayTeam, 
             fixtureId: fixture.id,
+            time: fixture.time,
+            league: fixture.league,
+            leagueLogo: fixture.leagueLogo,
             isLoading: true 
           }
         : card

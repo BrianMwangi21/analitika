@@ -71,6 +71,22 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
         />
       ) : (
         <>
+          {/* League and Time Info */}
+          {(card.league || card.time) && (
+            <div className="flex items-center justify-center gap-2 mb-4 text-xs text-[#00d4ff]/70 border-b border-[#00d4ff]/10 pb-3">
+              {card.leagueLogo && (
+                <img src={card.leagueLogo} alt={card.league} className="w-4 h-4 object-contain" />
+              )}
+              <span>{card.league}</span>
+              {card.league && card.time && <span>•</span>}
+              {card.time && (
+                <span>
+                  {new Date(card.time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit', timeZoneName: 'short'})}
+                </span>
+              )}
+            </div>
+          )}
+
           {/* Team Header */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex flex-col items-center">
