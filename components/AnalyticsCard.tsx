@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import { Card, Team, TeamStats, HeadToHead, Odds } from '@/types';
+import { Card, Team, TeamStats, HeadToHead, Odds, ExtendedOdds } from '@/types';
 import { getTeamStats, getHeadToHead } from '@/lib/footballApi';
 import LoadingCard from './LoadingCard';
 import ErrorCard from './ErrorCard';
@@ -10,6 +10,10 @@ import ErrorCard from './ErrorCard';
 interface AnalyticsCardProps {
   card: Card;
   onDelete: (id: string) => void;
+}
+
+function isExtendedOdds(odds: Odds | ExtendedOdds): odds is ExtendedOdds {
+  return 'matchWinner' in odds;
 }
 
 export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
@@ -50,6 +54,23 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
   const awayWins = h2h?.awayWins || 0;
   const draws = h2h?.draws || 0;
   const totalMatches = homeWins + awayWins + draws;
+
+  // Get odds for display
+  const get1X2Odds = (): Odds | null => {
+    if (!card.odds) return null;
+    if (isExtendedOdds(card.odds)) {
+      return card.odds.matchWinner;
+    }
+    return card.odds;
+  };
+
+  const getExtendedOdds = (): ExtendedOdds | null => {
+    if (!card.odds) return null;
+    return isExtendedOdds(card.odds) ? card.odds : null;
+  };
+
+  const odds1X2 = get1X2Odds();
+  const extendedOdds = getExtendedOdds();
 
   return (
     <div className="glass rounded-xl p-6 relative group card-hover animate-slide-up">
@@ -143,22 +164,56 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             </div>
           </div>
 
-          {/* Odds Section */}
-          {card.odds && (
+          {/* 1X2 Odds */}
+          {odds1X2 && (
             <div className="mb-4 p-3 glass rounded-lg border border-[#00d4ff]/20">
-              <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Today's Odds</h3>
+              <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">1X2 Odds</h3>
               <div className="flex justify-between text-center">
                 <div className="flex-1">
                   <div className="text-xs text-[#00d4ff]/50 mb-1">1</div>
-                  <div className="text-white font-bold text-lg">{card.odds.homeWin.toFixed(2)}</div>
+                  <div className="text-white font-bold text-lg">{odds1X2.homeWin.toFixed(2)}</div>
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-[#00d4ff]/50 mb-1">X</div>
-                  <div className="text-white font-bold text-lg">{card.odds.draw.toFixed(2)}</div>
+                  <div className="text-white font-bold text-lg">{odds1X2.draw.toFixed(2)}</div>
                 </div>
                 <div className="flex-1">
                   <div className="text-xs text-[#00d4ff]/50 mb-1">2</div>
-                  <div className="text-white font-bold text-lg">{card.odds.awayWin.toFixed(2)}</div>
+                  <div className="text-white font-bold text-lg">{odds1X2.awayWin.toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Over/Under 2.5 */}
+          {extendedOdds?.overUnder25 && (
+            <div className="mb-4 p-3 glass rounded-lg border border-[#00d4ff]/20">
+              <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Over/Under 2.5</h3>
+              <div className="flex justify-between text-center">
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">Over</div>
+                  <div className="text-white font-bold text-lg">{extendedOdds.overUnder25.over.toFixed(2)}</div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">Under</div>
+                  <div className="text-white font-bold text-lg">{extendedOdds.overUnder25.under.toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* BTTS */}
+          {extendedOdds?.btts && (
+            <div className="mb-4 p-3 glass rounded-lg border border-[#00d4ff]/20">
+              <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Both Teams To Score</h3>
+              <div className="flex justify-between text-center">
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">Yes</div>
+                  <div className="text-white font-bold text-lg">{extendedOdds.btts.yes.toFixed(2)}</div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">No</div>
+                  <div className="text-white font-bold text-lg">{extendedOdds.btts.no.toFixed(2)}</div>
                 </div>
               </div>
             </div>

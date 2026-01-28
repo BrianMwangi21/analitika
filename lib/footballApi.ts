@@ -1,5 +1,5 @@
 import fetchApi from './api';
-import { Team, TeamStats, HeadToHead, Match, Odds, Fixture } from '@/types';
+import { Team, TeamStats, HeadToHead, Match, Odds, ExtendedOdds, Fixture } from '@/types';
 
 export async function getTodaysFixtures(): Promise<Fixture[]> {
   try {
@@ -7,14 +7,7 @@ export async function getTodaysFixtures(): Promise<Fixture[]> {
     const data = await fetchApi(`/fixtures?date=${today}`);
     
     if (data && data.response) {
-      const fixtures: Fixture[] = data.response.map((fixture: {
-        fixture: { id: number; date: string };
-        teams: { 
-          home: { id: number; name: string; logo: string };
-          away: { id: number; name: string; logo: string };
-        };
-        league: { name: string; logo: string };
-      }) => ({
+      const fixtures: Fixture[] = data.response.map((fixture: any) => ({
         id: fixture.fixture.id,
         date: today,
         time: fixture.fixture.date,
@@ -28,7 +21,7 @@ export async function getTodaysFixtures(): Promise<Fixture[]> {
           name: fixture.teams.away.name,
           logo: fixture.teams.away.logo,
         },
-        odds: { homeWin: 0, draw: 0, awayWin: 0 }, // Placeholder, will fetch later
+        odds: { homeWin: 0, draw: 0, awayWin: 0 },
         league: fixture.league.name,
         leagueLogo: fixture.league.logo,
       }));
@@ -43,27 +36,40 @@ export async function getTodaysFixtures(): Promise<Fixture[]> {
   }
 }
 
-export async function getFixtureOdds(fixtureId: number): Promise<Odds | null> {
+export async function getFixtureOdds(fixtureId: number): Promise<ExtendedOdds | null> {
   try {
     const data = await fetchApi(`/odds?fixture=${fixtureId}`);
     
     if (data && data.response && data.response.length > 0) {
-      const bookmaker = data.response[0]?.bookmakers?.[0];
-      const odds = bookmaker?.bets?.find((bet: { id: number }) => bet.id === 1)?.values;
+      const firstBookmaker = data.response[0]?.bookmakers?.[0];
+      const bets = firstBookmaker?.bets || [];
       
-      if (odds && odds.length >= 3) {
-        const homeWin = odds.find((o: { value: string }) => o.value === 'Home')?.odd;
-        const draw = odds.find((o: { value: string }) => o.value === 'Draw')?.odd;
-        const awayWin = odds.find((o: { value: string }) => o.value === 'Away')?.odd;
-        
-        if (homeWin && draw && awayWin) {
-          return {
-            homeWin: parseFloat(homeWin),
-            draw: parseFloat(draw),
-            awayWin: parseFloat(awayWin),
-          };
-        }
-      }
+      const matchWinnerBet = bets.find((bet: any) => bet.id === 1)?.values;
+      const matchWinner = matchWinnerBet ? {
+        homeWin: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Home')?.odd) || 0,
+        draw: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Draw')?.odd) || 0,
+        awayWin: parseFloat(matchWinnerBet.find((o: any) => o.value === 'Away')?.odd) || 0,
+      } : { homeWin: 0, draw: 0, awayWin: 0 };
+      
+      const overUnderBet = bets.find((bet: any) => bet.id === 5)?.values;
+      const overUnder25 = overUnderBet ? {
+        over: parseFloat(overUnderBet.find((o: any) => o.value === 'Over 2.5')?.odd) || 0,
+        under: parseFloat(overUnderBet.find((o: any) => o.value === 'Under 2.5')?.odd) || 0,
+      } : null;
+      
+      const bttsBet = bets.find((bet: any) => bet.id === 8)?.values;
+      const btts = bttsBet ? {
+        yes: parseFloat(bttsBet.find((o: any) => o.value === 'Yes')?.odd) || 0,
+        no: parseFloat(bttsBet.find((o: any) => o.value === 'No')?.odd) || 0,
+      } : null;
+      
+      return {
+        matchWinner,
+        overUnder25,
+        btts,
+        doubleChance: { homeOrDraw: 0, homeOrAway: 0, drawOrAway: 0 },
+        exactScore: [],
+      };
     }
     
     return null;
@@ -78,7 +84,7 @@ export async function searchTeams(query: string): Promise<Team[]> {
     const data = await fetchApi(`/teams?search=${encodeURIComponent(query)}`);
     
     if (data && data.response) {
-      return data.response.map((item: { team: { id: number; name: string; logo: string } }) => ({
+      return data.response.map((item: any) => ({
         id: item.team.id,
         name: item.team.name,
         logo: item.team.logo,
@@ -122,11 +128,7 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
     const data = await fetchApi(`/fixtures/headtohead?h2h=${homeTeamId}-${awayTeamId}`);
     
     if (data && data.response) {
-      const matches: Match[] = data.response.map((fixture: { 
-        fixture: { id: number; date: string };
-        teams: { home: { id: number; name: string }; away: { id: number; name: string } };
-        goals: { home: number; away: number };
-      }) => {
+      const matches: Match[] = data.response.map((fixture: any) => {
         const homeGoals = fixture.goals?.home ?? 0;
         const awayGoals = fixture.goals?.away ?? 0;
         const homeId = fixture.teams.home.id;
@@ -151,7 +153,6 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
         };
       });
       
-      // Sort matches by date descending (most recent first)
       const sortedMatches = matches.sort((a, b) => {
         return new Date(b.date).getTime() - new Date(a.date).getTime();
       });
@@ -177,36 +178,6 @@ export async function getHeadToHead(homeTeamId: number, awayTeamId: number): Pro
     return null;
   } catch (error) {
     console.error('Error fetching head-to-head:', error);
-    return null;
-  }
-}
-
-export async function getOdds(fixtureId: number): Promise<Odds | null> {
-  try {
-    const data = await fetchApi(`/odds?fixture=${fixtureId}`);
-    
-    if (data && data.response && data.response.length > 0) {
-      const firstBookmaker = data.response[1]?.bookmakers?.[0];
-      const odds = firstBookmaker?.bets?.find((bet: { id: number }) => bet.id === 1)?.values;
-      
-      if (odds) {
-        const homeWin = odds.find((o: { value: string }) => o.value === 'Home')?.odd;
-        const draw = odds.find((o: { value: string }) => o.value === 'Draw')?.odd;
-        const awayWin = odds.find((o: { value: string }) => o.value === 'Away')?.odd;
-        
-        if (homeWin && draw && awayWin) {
-          return {
-            homeWin: parseFloat(homeWin),
-            draw: parseFloat(draw),
-            awayWin: parseFloat(awayWin),
-          };
-        }
-      }
-    }
-    
-    return null;
-  } catch (error) {
-    console.error('Error fetching odds:', error);
     return null;
   }
 }

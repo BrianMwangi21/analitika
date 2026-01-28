@@ -31,10 +31,33 @@ export interface HeadToHead {
   draws: number;
 }
 
+// Basic 1X2 odds
 export interface Odds {
   homeWin: number;
   draw: number;
   awayWin: number;
+}
+
+// Extended odds with multiple markets
+export interface ExtendedOdds {
+  matchWinner: Odds;
+  overUnder25: {
+    over: number;
+    under: number;
+  } | null;
+  btts: {
+    yes: number;
+    no: number;
+  } | null;
+  doubleChance: {
+    homeOrDraw: number;
+    homeOrAway: number;
+    drawOrAway: number;
+  };
+  exactScore: {
+    score: string;
+    odd: number;
+  }[];
 }
 
 export interface Fixture {
@@ -63,7 +86,7 @@ export interface Card {
   isLoading: boolean;
   error: string | null;
   fixtureId?: number;
-  odds?: Odds;
+  odds?: ExtendedOdds | Odds;
   time?: string;
   league?: string;
   leagueLogo?: string;
