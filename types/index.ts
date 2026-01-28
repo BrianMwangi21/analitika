@@ -37,6 +37,17 @@ export interface Odds {
   awayWin: number;
 }
 
+export interface Fixture {
+  id: number;
+  date: string;
+  time: string;
+  homeTeam: Team;
+  awayTeam: Team;
+  odds: Odds;
+  league: string;
+  leagueLogo: string;
+}
+
 export interface Analytics {
   homeTeamStats: TeamStats;
   awayTeamStats: TeamStats;
@@ -51,4 +62,6 @@ export interface Card {
   analytics: Analytics | null;
   isLoading: boolean;
   error: string | null;
+  fixtureId?: number;
+  odds?: Odds;
 }

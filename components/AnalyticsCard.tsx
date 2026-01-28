@@ -127,6 +127,27 @@ export default function AnalyticsCard({ card, onDelete }: AnalyticsCardProps) {
             </div>
           </div>
 
+          {/* Odds Section */}
+          {card.odds && (
+            <div className="mb-4 p-3 glass rounded-lg border border-[#00d4ff]/20">
+              <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Today's Odds</h3>
+              <div className="flex justify-between text-center">
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">1</div>
+                  <div className="text-white font-bold text-lg">{card.odds.homeWin.toFixed(2)}</div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">X</div>
+                  <div className="text-white font-bold text-lg">{card.odds.draw.toFixed(2)}</div>
+                </div>
+                <div className="flex-1">
+                  <div className="text-xs text-[#00d4ff]/50 mb-1">2</div>
+                  <div className="text-white font-bold text-lg">{card.odds.awayWin.toFixed(2)}</div>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Head to Head */}
           <div className="mb-4">
             <h3 className="text-[#00d4ff] text-sm font-semibold mb-2">Head to Head</h3>

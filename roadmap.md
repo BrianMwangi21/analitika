@@ -165,7 +165,7 @@ A futuristic football analytics dashboard with Iron Man/JARVIS aesthetics. Click
 ### Step 25: Add Odds Section
 - Display bookmaker odds (1X2)
 - Show odds in styled boxes
-- [ ] - PENDING
+- [x] - COMPLETED
 
 ### Step 26: Add Delete Button
 - Add X icon in top-right corner

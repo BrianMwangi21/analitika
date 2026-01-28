@@ -3,10 +3,10 @@
 import { useState, useEffect } from 'react';
 import Header from '@/components/Header';
 import EmptyCard from '@/components/EmptyCard';
-import TeamSearchModal from '@/components/TeamSearchModal';
+import GameSelectorModal from '@/components/GameSelectorModal';
 import AnalyticsCard from '@/components/AnalyticsCard';
-import { Card, Team } from '@/types';
-import { searchTeams } from '@/lib/footballApi';
+import { Card, Team, Fixture } from '@/types';
+import { searchTeams, getTodaysFixtures } from '@/lib/footballApi';
 
 const STORAGE_KEY = 'analitika-cards';
 
@@ -20,7 +20,7 @@ export default function Home() {
     error: null 
   }]);
 
-  // Step 32: Load from LocalStorage on mount
+  // Load from LocalStorage on mount
   useEffect(() => {
     try {
       const savedCards = localStorage.getItem(STORAGE_KEY);
@@ -44,7 +44,7 @@ export default function Home() {
     }
   }, []);
 
-  // Step 33: Save to LocalStorage when cards change, exclude empty cards
+  // Save to LocalStorage when cards change, exclude empty cards
   useEffect(() => {
     try {
       const cardsToSave = cards.filter(c => c.homeTeam && c.awayTeam);
@@ -62,13 +62,20 @@ export default function Home() {
     setIsModalOpen(true);
   };
 
-  const handleSelectTeams = async (homeTeam: Team, awayTeam: Team) => {
+  const handleSelectGame = (fixture: Fixture) => {
     if (!activeCardId) return;
 
-    // Update card with teams
+    // Update card with teams and odds
     setCards(prev => prev.map(card => 
       card.id === activeCardId 
-        ? { ...card, homeTeam, awayTeam, isLoading: true }
+        ? { 
+            ...card, 
+            homeTeam: fixture.homeTeam, 
+            awayTeam: fixture.awayTeam, 
+            fixtureId: fixture.id,
+            odds: fixture.odds,
+            isLoading: true 
+          }
         : card
     ));
 
@@ -110,10 +117,10 @@ export default function Home() {
       
       <main className="flex-1 px-4 pb-8">
         <div className="mx-auto max-w-7xl">
-          {/* Step 39: Responsive Grid - 1 mobile, 2 tablet, 3 desktop */}
+          {/* Responsive Grid - 1 mobile, 2 tablet, 3 desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {cards.map((card, index) => (
-              // Step 37: Staggered animation based on index
+              // Staggered animation based on index
               <div 
                 key={card.id} 
                 className={`animate-slide-up card-stagger-${Math.min(index + 1, 6)}`}
@@ -134,10 +141,10 @@ export default function Home() {
         </div>
       </main>
 
-      <TeamSearchModal
+      <GameSelectorModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        onSelectTeams={handleSelectTeams}
+        onSelectGame={handleSelectGame}
       />
     </div>
   );
