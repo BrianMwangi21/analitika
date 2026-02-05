@@ -189,7 +189,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] font-mono">
+    <div className="min-h-screen text-white">
       <Header 
         selectedOddsCount={totalSelectedOdds}
         onAnalyzeClick={handleAnalyzeClick}
@@ -197,10 +197,8 @@ export default function Home() {
       
       <main className="flex-1 px-4 pb-8">
         <div className="mx-auto max-w-7xl">
-          {/* Responsive Grid - 1 mobile, 2 tablet, 3 desktop */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
             {cards.map((card, index) => (
-              // Staggered animation based on index
               <div 
                 key={card.id} 
                 className={`animate-slide-up card-stagger-${Math.min(index + 1, 6)}`}
@@ -228,17 +226,16 @@ export default function Home() {
         onSelectGame={handleSelectGame}
       />
 
-      {/* Footer */}
-      <footer className="w-full py-6 px-4 border-t border-[#00d4ff]/10 mt-8">
+      <footer className="w-full py-6 px-4 border-t border-white/10 mt-8">
         <div className="max-w-7xl mx-auto flex flex-col items-center justify-center gap-3">
-          <span className="text-[#00d4ff]/60 text-sm">
-            Made with <span className="text-red-400">love</span> by Kabiru
+          <span className="text-white/60 text-sm">
+            Made with <span className="text-red-300">love</span> by Kabiru
           </span>
           <a
             href="https://github.com/BrianMwangi21/analitika"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-[#00d4ff]/60 hover:text-[#00d4ff] transition-colors text-sm"
+            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
           >
             <Github className="w-4 h-4" />
             <span>GitHub</span>

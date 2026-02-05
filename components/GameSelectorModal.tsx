@@ -60,26 +60,26 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div 
-        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
+        className="absolute inset-0 bg-[#03070c]/80 backdrop-blur-sm"
         onClick={onClose}
       />
       
-      <div className="relative glass rounded-xl p-4 md:p-6 w-full max-w-2xl mx-4 animate-slide-up max-h-[85vh] overflow-hidden flex flex-col">
+      <div className="relative panel-strong rounded-xl p-4 md:p-6 w-full max-w-2xl mx-4 animate-slide-up max-h-[85vh] overflow-hidden flex flex-col">
         <button
           onClick={onClose}
-          className="absolute top-3 right-3 md:top-4 md:right-4 p-2 text-[#00d4ff]/60 hover:text-[#00d4ff] transition-colors touch-manipulation"
+          className="absolute top-3 right-3 md:top-4 md:right-4 p-2 text-white/60 hover:text-white transition-colors touch-manipulation"
         >
           <X className="w-5 h-5" />
         </button>
 
-        <h2 className="text-lg md:text-xl font-bold text-gradient mb-3 md:mb-4">
+        <h2 className="text-lg md:text-xl font-bold text-holo mb-3 md:mb-4">
           Select Game
         </h2>
 
         {/* Date selector */}
         <div className="mb-2 md:mb-3">
           <div className="flex items-center gap-2 glass rounded-lg p-2">
-            <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[#00d4ff] flex-shrink-0" />
+            <Calendar className="w-4 h-4 md:w-5 md:h-5 text-[var(--accent)] flex-shrink-0" />
             <input
               type="date"
               value={selectedDate}
@@ -92,35 +92,35 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
         {/* Search filter */}
         <div className="mb-3 md:mb-4">
           <div className="flex items-center gap-2 glass rounded-lg p-2">
-            <Search className="w-4 h-4 md:w-5 md:h-5 text-[#00d4ff]/50 flex-shrink-0" />
+            <Search className="w-4 h-4 md:w-5 md:h-5 text-white/50 flex-shrink-0" />
             <input
               type="text"
               placeholder="Filter by team name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-transparent text-white focus:outline-none w-full placeholder-[#00d4ff]/50 text-sm md:text-base"
+              className="bg-transparent text-white focus:outline-none w-full placeholder-white/40 text-sm md:text-base"
             />
           </div>
         </div>
 
         {/* Results count */}
         {!loading && !error && filteredFixtures.length > 0 && (
-          <div className="text-[10px] md:text-xs text-[#00d4ff]/50 mb-2">
+          <div className="text-[10px] md:text-xs text-white/50 mb-2">
             Showing {filteredFixtures.length} of {fixtures.length} games
           </div>
         )}
 
         {loading ? (
-          <div className="flex items-center justify-center py-6 md:py-8">
-            <div className="animate-pulse text-[#00d4ff] text-sm">Loading games...</div>
-          </div>
-        ) : error ? (
-          <div className="text-red-400 text-center py-6 md:py-8 text-sm">{error}</div>
-        ) : filteredFixtures.length === 0 ? (
-          <div className="text-[#00d4ff]/50 text-center py-6 md:py-8 text-sm">
-            {searchQuery ? 'No teams match your search' : 'No games scheduled for this date'}
-          </div>
-        ) : (
+            <div className="flex items-center justify-center py-6 md:py-8">
+              <div className="animate-pulse text-[var(--accent)] text-sm">Loading games...</div>
+            </div>
+          ) : error ? (
+            <div className="text-red-400 text-center py-6 md:py-8 text-sm">{error}</div>
+          ) : filteredFixtures.length === 0 ? (
+            <div className="text-white/50 text-center py-6 md:py-8 text-sm">
+              {searchQuery ? 'No teams match your search' : 'No games scheduled for this date'}
+            </div>
+          ) : (
           <div className="overflow-y-auto flex-1 space-y-2 md:space-y-3 pr-2">
             {filteredFixtures.map((fixture) => (
               <button
@@ -129,7 +129,7 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
                   onSelectGame(fixture);
                   onClose();
                 }}
-                className="w-full glass rounded-lg p-3 md:p-4 hover:bg-[#00d4ff]/10 transition-all text-left group touch-manipulation"
+                className="w-full glass rounded-lg p-3 md:p-4 hover:bg-white/5 transition-all text-left group touch-manipulation"
               >
                  <div className="flex items-center gap-2 md:gap-4">
                   {/* Home Team */}
@@ -142,7 +142,7 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
                     <span className="text-xs md:text-sm text-white truncate">{fixture.homeTeam.name}</span>
                   </div>
                   
-                  <span className="text-[#00d4ff] font-bold text-sm md:text-base flex-shrink-0">VS</span>
+                  <span className="text-[var(--accent)] font-bold text-sm md:text-base flex-shrink-0">VS</span>
                   
                   {/* Away Team */}
                   <div className="flex items-center gap-1 md:gap-2 flex-1 min-w-0">
@@ -156,7 +156,7 @@ export default function GameSelectorModal({ isOpen, onClose, onSelectGame }: Gam
                 </div>
                 
                 {/* League info with UTC time */}
-                <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2 text-[10px] md:text-xs text-[#00d4ff]/50">
+                <div className="mt-1 md:mt-2 flex items-center gap-1 md:gap-2 text-[10px] md:text-xs text-white/50">
                   <img src={fixture.leagueLogo} alt={fixture.league} className="w-3 h-3 md:w-4 md:h-4 object-contain flex-shrink-0" />
                   <span className="truncate max-w-[80px] md:max-w-none">{fixture.league}</span>
                   <span>•</span>

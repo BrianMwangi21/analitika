@@ -152,14 +152,14 @@ export default function AnalysisPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] font-mono">
-      <header className="w-full py-4 md:py-6 px-4 border-b border-[#00d4ff]/10">
+    <div className="min-h-screen text-white">
+      <header className="w-full py-5 md:py-7 px-4 border-b border-white/10">
         <div className="max-w-4xl mx-auto flex items-center justify-between">
-          <button onClick={handleBack} className="flex items-center gap-2 text-[#00d4ff]/70 hover:text-[#00d4ff]">
+          <button onClick={handleBack} className="flex items-center gap-2 text-white/70 hover:text-white">
             <ArrowLeft className="w-4 h-4" />
             <span className="text-sm">Back</span>
           </button>
-          <h1 className="text-xl md:text-2xl font-bold text-gradient">Analysis</h1>
+          <h1 className="font-display text-xl md:text-2xl text-holo">Analysis</h1>
           <div className="w-[100px]" />
         </div>
       </header>
@@ -167,15 +167,15 @@ export default function AnalysisPage() {
       <main className="px-4 py-6 md:py-8">
         <div className="max-w-4xl mx-auto">
           {loading && (
-            <div className="glass rounded-xl p-8 md:p-12 text-center">
-              <Loader2 className="w-8 h-8 mx-auto mb-4 text-[#00d4ff] animate-spin" />
-              <h2 className="text-[#00d4ff] text-lg font-semibold mb-2">Analyzing Your Selections</h2>
-              <p className="text-[#00d4ff]/50 text-sm">Bazu wetu is crunching the numbers and reading the vibe...</p>
+            <div className="panel rounded-xl p-8 md:p-12 text-center">
+              <Loader2 className="w-8 h-8 mx-auto mb-4 text-[var(--accent)] animate-spin" />
+              <h2 className="font-display text-[var(--accent)] text-lg font-semibold mb-2">Analyzing Your Selections</h2>
+              <p className="text-white/50 text-sm">Bazu wetu is crunching the numbers and reading the vibe...</p>
             </div>
           )}
 
           {error && !loading && (
-            <div className="glass rounded-xl p-8 md:p-12 text-center border border-red-500/30">
+            <div className="panel rounded-xl p-8 md:p-12 text-center border border-red-500/30">
               <AlertTriangle className="w-8 h-8 mx-auto mb-4 text-red-400" />
               <h2 className="text-red-400 text-lg font-semibold mb-2">Analysis Failed</h2>
               <p className="text-white/70 text-sm mb-6">{error}</p>
@@ -187,20 +187,19 @@ export default function AnalysisPage() {
 
           {!loading && !error && analysis && (
             <div className="space-y-6 mb-6">
-              {/* Confidence & Risk Level Combined */}
-              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
+              <div className="panel rounded-xl p-4 md:p-6">
                 <div className="flex items-center justify-between">
                   <div className="flex-1 text-center p-3">
-                    <span className="text-xs text-[#00d4ff]/50 block mb-1">Confidence</span>
+                    <span className="text-xs text-white/50 block mb-1">Confidence</span>
                     <span className={`text-xl font-bold capitalize ${getConfidenceColor(analysis.confidence)}`}>
                       {analysis.confidence}
                     </span>
                   </div>
                   
-                  <div className="w-px h-16 bg-[#00d4ff]/30 mx-4" />
+                  <div className="w-px h-16 bg-white/20 mx-4" />
                   
                   <div className="flex-1 text-center p-3">
-                    <span className="text-xs text-[#00d4ff]/50 block mb-1">Risk Level</span>
+                    <span className="text-xs text-white/50 block mb-1">Risk Level</span>
                     <span className={`text-xl font-bold capitalize ${analysis.riskLevel === 'low' ? 'text-green-400' : analysis.riskLevel === 'medium' ? 'text-yellow-400' : 'text-red-400'}`}>
                       {analysis.riskLevel}
                     </span>
@@ -208,59 +207,56 @@ export default function AnalysisPage() {
                 </div>
               </div>
 
-              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
-                <h3 className="text-[#00d4ff] text-sm font-semibold mb-3">Analysis</h3>
+              <div className="panel rounded-xl p-4 md:p-6">
+                <h3 className="text-[var(--accent)] text-sm font-semibold mb-3">Analysis</h3>
                 <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown>{analysis.analysis}</ReactMarkdown>
                 </div>
               </div>
 
-              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
-                <h3 className="text-[#00d4ff] text-sm font-semibold mb-3">Recommendation</h3>
+              <div className="panel rounded-xl p-4 md:p-6">
+                <h3 className="text-[var(--accent)] text-sm font-semibold mb-3">Recommendation</h3>
                 <div className="text-white/90 text-sm leading-relaxed prose prose-invert prose-sm max-w-none">
                   <ReactMarkdown>{analysis.recommendation}</ReactMarkdown>
                 </div>
               </div>
 
-              {/* Refresh Button */}
               <div className="flex justify-center pt-4">
                 <button
                   onClick={handleRefresh}
-                  className="px-4 py-2 text-sm text-[#00d4ff]/70 hover:text-[#00d4ff] border border-[#00d4ff]/30 rounded-lg hover:bg-[#00d4ff]/10 transition-colors"
+                  className="px-4 py-2 text-sm btn-ghost rounded-lg transition-colors"
                 >
                   Refresh Analysis
                 </button>
               </div>
 
-              {/* AI Disclaimer */}
-              <div className="glass rounded-xl p-4 md:p-6 border border-[#00d4ff]/20">
+              <div className="panel rounded-xl p-4 md:p-6">
                 <div className="flex items-start gap-3">
-                  <div className="w-1 h-1 mt-2 rounded-full bg-[#00d4ff]/50 flex-shrink-0" />
-                  <p className="text-[#00d4ff]/50 text-xs leading-relaxed">
+                  <div className="w-1 h-1 mt-2 rounded-full bg-[var(--accent)]/60 flex-shrink-0" />
+                  <p className="text-white/50 text-xs leading-relaxed">
                     AI can make mistakes. This analysis is generated by an AI model and should be used as guidance, not financial advice. Always do your own research and bet responsibly.
                   </p>
                 </div>
               </div>
 
-              {/* Selected Odds - Moved to bottom */}
               {selectedOdds.length > 0 && (
-                <div className="glass rounded-xl p-4 md:p-6 mt-6 border border-[#00d4ff]/20">
-                  <h2 className="text-[#00d4ff] text-sm font-semibold mb-4 flex items-center gap-2">
+                <div className="panel rounded-xl p-4 md:p-6 mt-6">
+                  <h2 className="text-[var(--accent)] text-sm font-semibold mb-4 flex items-center gap-2">
                     <Brain className="w-4 h-4" />
                     Selected Odds ({selectedOdds.length})
                   </h2>
                   
                   <div className="space-y-2">
                     {selectedOdds.map((odd, index) => (
-                      <div key={`${odd.cardId}-${odd.market}-${odd.selection}`} className="flex items-center justify-between py-2 px-3 rounded bg-[#00d4ff]/5 border border-[#00d4ff]/10">
+                      <div key={`${odd.cardId}-${odd.market}-${odd.selection}`} className="flex items-center justify-between py-2 px-3 rounded bg-white/5 border border-white/10">
                         <div className="flex items-center gap-2 text-xs md:text-sm">
-                          <span className="text-[#00d4ff]/50">{index + 1}.</span>
+                          <span className="text-white/40">{index + 1}.</span>
                           <span className="text-white">{odd.homeTeam?.name || 'Home'} vs {odd.awayTeam?.name || 'Away'}</span>
                         </div>
                         <div className="flex items-center gap-3 text-xs">
-                          <span className="text-[#00d4ff]/70">{odd.market}</span>
+                          <span className="text-white/60">{odd.market}</span>
                           <span className="text-white font-bold">{odd.selection}</span>
-                          <span className="text-[#00d4ff] font-mono">@{odd.value.toFixed(2)}</span>
+                          <span className="text-[var(--accent)] font-mono">@{odd.value.toFixed(2)}</span>
                         </div>
                       </div>
                     ))}
@@ -272,17 +268,16 @@ export default function AnalysisPage() {
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="w-full py-6 px-4 border-t border-[#00d4ff]/10 mt-8">
+      <footer className="w-full py-6 px-4 border-t border-white/10 mt-8">
         <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-3">
-          <span className="text-[#00d4ff]/60 text-sm">
-            Made with <span className="text-red-400">love</span> by Kabiru
+          <span className="text-white/60 text-sm">
+            Made with <span className="text-red-300">love</span> by Kabiru
           </span>
           <a
             href="https://github.com/BrianMwangi21/analitika"
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-2 text-[#00d4ff]/60 hover:text-[#00d4ff] transition-colors text-sm"
+            className="flex items-center gap-2 text-white/60 hover:text-white transition-colors text-sm"
           >
             <Github className="w-4 h-4" />
             <span>GitHub</span>
