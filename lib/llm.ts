@@ -7,7 +7,7 @@ const openrouter = createOpenRouter({
 });
 
 // Use the specified free model
-const MODEL_NAME = 'tngtech/tng-r1t-chimera:free';
+const MODEL_NAME = 'openrouter/free';
 
 interface SelectedOdd {
   market: string;
