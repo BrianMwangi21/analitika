@@ -6,7 +6,7 @@ const openrouter = createOpenRouter({
   apiKey: process.env.OPENROUTER_API_KEY || '',
 });
 
-const MODEL_NAME = 'tngtech/tng-r1t-chimera:free';
+const MODEL_NAME = 'openrouter/free';
 
 interface SelectedOdd {
   market: string;
